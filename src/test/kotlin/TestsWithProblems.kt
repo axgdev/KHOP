@@ -1,6 +1,8 @@
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.*
+import kotlin.collections.HashMap
 
 class TestsWithProblems {
 
@@ -16,11 +18,248 @@ class TestsWithProblems {
         val taxiDriver = SimplePerson(manchester)
         val initialState = MyState(axel, taxiDriver, locations)
         val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, manchester)))
-        val khop = KHOP<MyState>(Domain(initialState,initialNetwork), 10)
+        val khop = KHOP(Domain(initialState,initialNetwork), 1)
         val plan = khop.findPlan()
         println("out of planner, plan: " + plan)
         val expectedActions = mutableListOf(Walk(london, manchester) as Operator<MyState>)
         val expectedPlan = PlanObj<MyState>(actions = expectedActions)
         assertEquals(expectedPlan, plan)
     }
+
+    @Test
+    fun travelByTaxiMethodTest() {
+        //given
+        //initial state, initial network
+        val london = Location("London", 51.507351, -0.127758)
+        val manchester = Location("Manchester", 53.480759, -2.242631)
+        val edinburgh = Location("Edinburgh", 55.953252, -3.188267)
+        val locations = arrayListOf(london, manchester, edinburgh)
+        val axel = Person(london, 534.0*1000,0.0)
+        val taxiDriver = SimplePerson(manchester)
+        val initialState = MyState(axel, taxiDriver, locations)
+        val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, edinburgh)))
+        val khop = KHOP(Domain(initialState,initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("out of planner, plan: " + plan)
+        assertEquals(PlanObj<MyState>(actions = mutableListOf(
+                CallTaxi(london),
+                RideTaxi(london, edinburgh),
+                PayDriver())), plan)
+    }
+
+    fun getInitialNetworkProblemsSimpleTest(): BlocksState {
+        return BlocksState(pos = mapOf(Pair("a","b"),Pair("b", table),Pair("c", table)),
+                clear = mapOf(Pair("c", true), Pair("b", false), Pair("a", true)), holding = falseHolding)
+    }
+
+    @Test
+    fun failBlockWorldProblem1() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(Pickup("a")))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(PlanObj<BlocksState>(true), plan)
+    }
+
+    @Test
+    fun failBlockWorldProblem2() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(Pickup("b")))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(PlanObj<BlocksState>(true), plan)
+    }
+
+    @Test
+    fun succeedBlockWorldProblem1() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(Pickup("c")))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
+    }
+
+    @Test
+    fun succeedBlockWorldProblem2() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(Unstack("a", "b")))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(PlanObj<BlocksState>(false, mutableListOf(Unstack("a", "b"))), plan)
+    }
+
+    @Test
+    fun succeedBlockWorldProblem3() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(Get("a")))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(PlanObj<BlocksState>(false, mutableListOf(Unstack("a", "b"))), plan)
+    }
+
+    @Test
+    fun failBlockWorldProblem3() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(Get("b")))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(PlanObj<BlocksState>(false, mutableListOf()), plan)
+    }
+
+    @Test
+    fun succeedBlockWorldProblem4() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(Get("c")))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
+    }
+
+    fun getComplexGoal_1_Solution(): PlanObj<BlocksState> {
+        return PlanObj<BlocksState>(false, mutableListOf(
+                Unstack("a","b"),
+                Putdown("a"),
+                Pickup("b"),
+                Stack("b","a"),
+                Pickup("c"),
+                Stack("c", "b")))
+    }
+
+    @Test
+    fun ComplexGoal_1a() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val goal_1a = BlocksState(pos = mapOf(Pair("c","b"),Pair("b", "a"),Pair("a", table)),
+                clear = mapOf(Pair("c", true), Pair("b", false), Pair("a", false)), holding = falseHolding)
+        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_1a)))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(getComplexGoal_1_Solution(), plan)
+    }
+
+    @Test
+    fun ComplexGoal_1b() {
+        val initialState = getInitialNetworkProblemsSimpleTest()
+        val goal_1b = BlocksState(pos = mapOf(Pair("c","b"),Pair("b", "a")))
+        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_1b)))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertEquals(getComplexGoal_1_Solution(), plan)
+    }
+
+    fun getInitialNetwork2(): BlocksState {
+        return BlocksState(pos = mapOf(Pair("a","c"),Pair("b", "d"),Pair("c", table), Pair("d", table)),
+                clear = mapOf(Pair("a", true), Pair("c", false), Pair("b", true), Pair("d", false)),
+                holding = falseHolding)
+    }
+
+    fun getComplexGoal_2_Solutions(): List<PlanObj<BlocksState>> {
+        val alternativePlan1 = PlanObj<BlocksState>(false, mutableListOf(
+                Unstack("b","d"),
+                Putdown("b"),
+                Unstack("a","c"),
+                Stack("a","d"),
+                Pickup("b"),
+                Stack("b","c"))
+        )
+        val alternativePlan2 = PlanObj<BlocksState>(false, mutableListOf(
+                Unstack("a","c"),
+                Putdown("a"),
+                Unstack("b","d"),
+                Stack("b","c"),
+                Pickup("a"),
+                Stack("a","d"))
+        )
+        return listOf(alternativePlan1,alternativePlan2)
+    }
+
+    fun satisfiesOneOfTheSolutions(expected: List<Any>, actual: Any): Boolean {
+        var satisfiesAny = false
+        for (alternativeSolution in expected)
+            satisfiesAny = satisfiesAny || (alternativeSolution == actual)
+        return satisfiesAny
+    }
+
+    @Test
+    fun ComplexGoal_2a() {
+        val initialState = getInitialNetwork2()
+        val goal_2a = BlocksState(pos = mapOf(Pair("b","c"),Pair("a", "d"),Pair("c",table),Pair("d",table)),
+                clear = mapOf(Pair("a",true),Pair("c",false),Pair("b",true),Pair("d",false)),
+                holding = falseHolding)
+        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_2a)))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
+    }
+
+    @Test
+    fun ComplexGoal_2b() {
+        val initialState = getInitialNetwork2()
+        val goal_2b = BlocksState(pos = mapOf(Pair("b","c"),Pair("a", "d")))
+        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_2b)))
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
+    }
+
+    fun getMapWithAllKeys(vararg keyValues: String): Map<String, String> {
+        val resultingMap = mutableMapOf<String,String>()
+        for (keyValue in keyValues) {
+            val splitted = keyValue.split(":")
+            if (splitted.size < 2)
+                throw RuntimeException("Wrong keyValue: " + keyValue)
+            resultingMap[splitted[0]] = splitted[1]
+        }
+        return resultingMap.toMap()
+    }
+
+    fun getInitialNetwork3(): BlocksState {
+        val clearS = mutableMapOf<String,Boolean>()
+        for (i in 1..20)
+            clearS[i.toString()] = false
+        clearS.replace("1", true)
+        clearS.replace("11", true)
+        clearS.replace("9", true)
+        clearS.replace("19", true)
+        //{1:12, 12:13, 13:'table', 11:10, 10:5, 5:4,
+        // 4:14, 14:15, 15:'table', 9:8, 8:7, 7:6, 6:'table',
+        // 19:18, 18:17, 17:16, 16:3, 3:2, 2:'table'}
+        return BlocksState(pos = getMapWithAllKeys("1:12", "12:13", "13:table", "11:10", "10:5", "5:4",
+                "4:14", "14:15", "15:table", "9:8", "8:7", "7:6", "6:table",
+                "19:18", "18:17", "17:16", "16:3", "3:2", "2:table"),
+                clear = clearS.toMap(),
+                holding = falseHolding)
+//        return BlocksState(pos = mapOf(
+//                Pair("1","12"),Pair("12", "13"),Pair("13", table), Pair("11", "10"),Pair("10","5"),Pair("5", "4"),
+//                Pair("4", "14"), Pair("14", "15"), Pair("15",table),Pair("9", "8"),Pair("8", "7"),Pair("7", "6"),
+//                Pair("6", table), Pair("19", "18"), Pair("18","17"),Pair("17", "16"),Pair("16", "3"), Pair("3", "2"),
+//                Pair("2",table)),
+//                clear = clearS.toMap(),
+//                holding = falseHolding)
+    }
+
+    @Test
+    fun ComplexGoal_3a() {
+        val initialState = getInitialNetwork3()
+        val goal_2b = BlocksState(pos = getMapWithAllKeys("15:13", "13:8", "8:9", "9:4", "4:table",
+                "12:2", "2:3", "3:16", "16:11", "11:7", "7:6", "6:table"),
+                clear = mapOf(Pair("17",true),Pair("15",true),Pair("12",true)))
+        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_2b)))
+        val khop = KHOP(Domain(initialState, initialNetwork), 10)
+        val plan = khop.findPlan()
+        println("Out of planner, plan: " + plan)
+        assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
+    }
+
+
 }

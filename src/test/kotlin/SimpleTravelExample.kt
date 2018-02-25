@@ -53,13 +53,13 @@ data class Walk(val fromLocation: Location, val toLocation: Location) : Operator
     }
 }
 
-data class CallTaxi(val toLocation: Location): Operator<MyState> {
+data class CallTaxi(val fromLocation: Location): Operator<MyState> {
     override fun satisfiesPreconditions(state: MyState): Boolean {
         return true
     }
 
     override fun applyEffects(state: MyState): MyState {
-        return state.copy(taxiDriver = state.taxiDriver.copy(location = toLocation))
+        return state.copy(taxiDriver = state.taxiDriver.copy(location = fromLocation))
     }
 }
 
@@ -84,6 +84,18 @@ class PayDriver(): Operator<MyState> {
     override fun applyEffects(state: MyState): MyState {
         return state.copy(person = state.person.copy(cash = state.person.cash - state.person.owe, owe = 0.0))
     }
+
+    override fun toString(): String {
+        return "PayDriver()"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return this.toString() == other?.toString()
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
 }
 
 data class TravelByFoot(val fromLocation: Location, val toLocation: Location): Method<MyState> {
@@ -91,7 +103,7 @@ data class TravelByFoot(val fromLocation: Location, val toLocation: Location): M
         return fromLocation.distanceTo(toLocation) <= 300
     }
 
-    override fun decompose(): List<NetworkElement> {
+    override fun decompose(state: MyState): List<NetworkElement> {
         return listOf(Walk(fromLocation, toLocation))
     }
 }
@@ -101,8 +113,8 @@ data class TravelByTaxi(val fromLocation: Location, val toLocation: Location): M
         return state.person.cash >= taxiRate(fromLocation,toLocation)
     }
 
-    override fun decompose(): List<NetworkElement> {
-        return listOf(CallTaxi(toLocation), RideTaxi(fromLocation, toLocation), PayDriver())
+    override fun decompose(state: MyState): List<NetworkElement> {
+        return listOf(CallTaxi(fromLocation), RideTaxi(fromLocation, toLocation), PayDriver())
     }
 }
 
