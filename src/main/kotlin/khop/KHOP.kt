@@ -1,3 +1,5 @@
+package khop
+
 import java.util.*
 
 class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState>, val verboseLevel: Int = 0) {
@@ -11,7 +13,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
 
     /**
      * TFD Algorithm:
-     * sigma: State-variable planning Domain
+     * sigma: khop.State-variable planning khop.Domain
      * Sigma is defined as (S [Strips States], A
      * methods: set of methods
      * tasks: list of tasks
@@ -51,7 +53,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
                     println("depth: $depth new state: $newState")
                 val nextPlan = TFD_Without_SideEffects(newState, tasks, plan, depth + 1)
                 if (nextPlan.failed)
-                    throw Exception("Plan failed: " + nextPlan.toString())
+                    throw Exception("khop.Plan failed: " + nextPlan.toString())
                 nextPlan.actions.add(0, operator)
                 if (verboseLevel > 2)
                     println("Added operator: $operator to nextplan: $nextPlan and returning in depth: $depth")
@@ -84,7 +86,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
                         tasks.push(decomposedTask)
                     val nextPlan = TFD_Without_SideEffects(state, tasks, plan, depth + 1)
                     if (nextPlan.failed)
-                        throw Exception("Plan failed: " + nextPlan.toString())
+                        throw Exception("khop.Plan failed: " + nextPlan.toString())
                     if (verboseLevel > 2)
                         println("Added method to plan: $method to nextplan: $nextPlan and returning in depth: $depth")
                     return nextPlan
@@ -105,7 +107,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
         return candidates.first()
     }
 
-//    fun findApplicableOperator(task: Operator, state: State): List<Operator> {
+//    fun findApplicableOperator(task: khop.Operator, state: khop.State): List<khop.Operator> {
 //        //return domain.operators.filter { it.task.name == task.name && it.satisfiesPreconditions(state) }
 //    }
 
@@ -113,65 +115,24 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
         return methodGroup.methods.filter { it.satisfiesPreconditions(state) }
     }
 
-//    fun chooseOneTask(tasks: List<Operator>): Action {
+//    fun chooseOneTask(tasks: List<khop.Operator>): Action {
 //
 //    }
 
 
 }
 
-interface NetworkElement {
-
-}
-
-interface Method<ExtendedState: State<ExtendedState>>: NetworkElement {
-    fun satisfiesPreconditions(state: ExtendedState): Boolean
-    fun decompose(state: ExtendedState): List<NetworkElement>
-}
-
-interface MethodGroup<ExtendedState: State<ExtendedState>>: NetworkElement {
-    val methods: List<Method<ExtendedState>>
-}
-
-interface Operator<ExtendedState: State<ExtendedState>>: NetworkElement {
-    fun satisfiesPreconditions(state: ExtendedState): Boolean
-    fun applyEffects(state: ExtendedState): ExtendedState
-}
-
-
-interface Plan<ExtendedState: State<ExtendedState>> {
-    var failed: Boolean
-    val actions: MutableList<Operator<ExtendedState>>
-}
-
-data class PlanObj<ExtendedState: State<ExtendedState>>(override var failed: Boolean = false,
-                                                        override val actions: MutableList<Operator<ExtendedState>> =
-                                                        mutableListOf()): Plan<ExtendedState> {
-}
-
 fun <ExtendedState: State<ExtendedState>> executePlan(plan: Plan<ExtendedState>,
-                                                      initialState: ExtendedState): ExtendedState {
+                                                           initialState: ExtendedState): ExtendedState {
     if (plan.actions.isEmpty())
-        throw Exception("There is no plan to Execute! (Plan is empty)")
+        throw Exception("There is no plan to Execute! (khop.Plan is empty)")
     var finalState = initialState.deepCopy()
     for (element in plan.actions) {
         if (!element.satisfiesPreconditions(finalState))
-            throw Exception("Operator: $element could not be applied because it does not satisfy preconditions")
+            throw Exception("khop.Operator: $element could not be applied because it does not satisfy preconditions")
         finalState = element.applyEffects(finalState)
     }
     return finalState
 }
 
-//interface Action: Operator
 
-class Domain<ExtendedState: State<ExtendedState>>(val initialState: ExtendedState, val initialNetwork: Deque<NetworkElement>)
-//interface Method<ExtendedState: State<ExtendedState>>
-//interface Task {
-//    val name: String
-//}
-//class ATask(override val name: String): Task
-
-
-abstract class State<ExtendedState: State<ExtendedState>> {
-    abstract fun deepCopy(): ExtendedState
-}

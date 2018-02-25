@@ -2,9 +2,9 @@ package simple_travel_example.methods
 
 import simple_travel_example.model.Location
 import simple_travel_example.model.MyState
-import Method
-import MethodGroup
-import NetworkElement
+import khop.Method
+import khop.MethodGroup
+import khop.NetworkElement
 import simple_travel_example.DomainFunctions
 import simple_travel_example.operators.*
 

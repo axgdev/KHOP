@@ -1,6 +1,6 @@
 package blocks_world
 
-import State
+import khop.State
 
 data class BlocksState(val pos: Map<String,String> = emptyMap(),
                        val clear: Map<String, Boolean> = emptyMap(),

@@ -1,3 +1,4 @@
+import khop.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import simple_travel_example.methods.Travel
@@ -18,8 +19,8 @@ class SimpleTravelExampleTests {
         val axel = Person(london, 0.0, 0.0)
         val initialState = MyState(axel, taxiDriver, locations)
         val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, manchester)))
-        val khop = KHOP(Domain(initialState,initialNetwork), 1)
-        val plan = khop.findPlan()
+        val mkhop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = mkhop.findPlan()
         println("out of planner, plan: " + plan)
         val expectedActions = mutableListOf(Walk(london, manchester) as Operator<MyState>)
         val expectedPlan = PlanObj<MyState>(actions = expectedActions)
@@ -31,8 +32,8 @@ class SimpleTravelExampleTests {
         val axel = Person(london, 534.0 * 1000, 0.0)
         val initialState = MyState(axel, taxiDriver, locations)
         val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, edinburgh)))
-        val khop = KHOP(Domain(initialState,initialNetwork), 1)
-        val plan = khop.findPlan()
+        val mkhop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = mkhop.findPlan()
         println("out of planner, plan: " + plan)
         assertEquals(PlanObj<MyState>(actions = mutableListOf(
                 CallTaxi(london),

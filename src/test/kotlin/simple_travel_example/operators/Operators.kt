@@ -2,7 +2,7 @@ package simple_travel_example.operators
 
 import simple_travel_example.model.Location
 import simple_travel_example.model.MyState
-import Operator
+import khop.Operator
 import simple_travel_example.DomainFunctions
 
 data class CallTaxi(val fromLocation: Location): Operator<MyState> {

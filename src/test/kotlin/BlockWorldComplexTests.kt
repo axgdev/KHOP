@@ -1,6 +1,10 @@
 import blocks_world.*
 import blocks_world.methods.*
 import blocks_world.operators.*
+import khop.Domain
+import khop.KHOP
+import khop.NetworkElement
+import khop.PlanObj
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.*
@@ -46,11 +50,11 @@ class BlockWorldComplexTests {
                 clear = mapOf(Pair("a", true), Pair("c", false), Pair("b", true), Pair("d", false)),
                 holding = falseHolding)
         val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_2a)))
-        val khop = KHOP(Domain(initialState, initialNetwork), 1)
-        val plan = khop.findPlan()
+        val mkhop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = mkhop.findPlan()
         println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
-        assertTrue(isGoalStateSatisfied(khop.executePlan(plan), goal_2a))
+        assertTrue(isGoalStateSatisfied(mkhop.executePlan(plan), goal_2a))
     }
 
     @Test
@@ -58,11 +62,11 @@ class BlockWorldComplexTests {
         val initialState = getInitialNetwork2()
         val goal_2b = BlocksState(pos = mapOf(Pair("b", "c"), Pair("a", "d")))
         val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_2b)))
-        val khop = KHOP(Domain(initialState, initialNetwork), 1)
-        val plan = khop.findPlan()
+        val mkhop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = mkhop.findPlan()
         println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
-        assertTrue(isGoalStateSatisfied(khop.executePlan(plan), goal_2b))
+        assertTrue(isGoalStateSatisfied(mkhop.executePlan(plan), goal_2b))
     }
 
     fun getMapWithAllKeys(vararg keyValues: String): Map<String, String> {
@@ -142,11 +146,11 @@ class BlockWorldComplexTests {
                 "12:2", "2:3", "3:16", "16:11", "11:7", "7:6", "6:table"),
                 clear = mapOf(Pair("17", true), Pair("15", true), Pair("12", true)))
         val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_2b)))
-        val khop = KHOP(Domain(initialState, initialNetwork), 1)
-        val plan = khop.findPlan()
+        val mkhop = KHOP(Domain(initialState, initialNetwork), 1)
+        val plan = mkhop.findPlan()
         println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_3_solutions(),plan))
-        val finalState = khop.executePlan(plan)
+        val finalState = mkhop.executePlan(plan)
         assertTrue(isGoalStateSatisfied(finalState, goal_2b))
     }
 

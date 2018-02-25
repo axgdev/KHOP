@@ -2,8 +2,8 @@ package blocks_world.methods
 
 import blocks_world.operators.*
 import blocks_world.*
-import Method
-import NetworkElement
+import khop.Method
+import khop.NetworkElement
 
 data class MoveBlocks(val goal: BlocksState): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {

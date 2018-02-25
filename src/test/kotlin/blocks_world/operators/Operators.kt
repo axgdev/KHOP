@@ -1,6 +1,6 @@
 package blocks_world.operators
 
-import Operator
+import khop.Operator
 import blocks_world.*
 
 data class Putdown(val blockB: String): Operator<BlocksState> {

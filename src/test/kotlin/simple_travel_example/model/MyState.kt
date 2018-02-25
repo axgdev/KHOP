@@ -1,6 +1,6 @@
 package simple_travel_example.model
 
-import State
+import khop.State
 
 data class MyState(val person: Person, val taxiDriver: SimplePerson, val location: List<Location>): State<MyState>() {
     override fun deepCopy(): MyState {
