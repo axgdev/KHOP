@@ -293,6 +293,8 @@ class TestsWithProblems {
         val plan = khop.findPlan()
         println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_3_solutions(),plan))
+        val finalState = khop.executePlan(plan)
+        assertTrue(isGoalStateSatisfied(finalState,goal_2b))
     }
 
 

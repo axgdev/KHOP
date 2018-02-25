@@ -235,3 +235,14 @@ data class Put(val block1: String, val block2: String): Method<BlocksState> {
     }
 
 }
+
+fun isGoalStateSatisfied(comparingState: BlocksState, goalState: BlocksState): Boolean {
+    var result = true
+    if (goalState.holding.isNotBlank())
+        result = result && comparingState.holding == goalState.holding
+    for (pos in goalState.pos)
+        result = result && comparingState.pos[pos.key] == pos.value
+    for (clear in goalState.clear)
+        result = result && comparingState.clear[clear.key] == clear.value
+    return result
+}

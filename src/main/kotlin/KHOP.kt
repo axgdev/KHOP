@@ -5,6 +5,10 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
     fun findPlan() =
             TFD_Without_SideEffects(domain.initialState, domain.initialNetwork, PlanObj<ExtendedState>())
 
+    fun executePlan(plan: Plan<ExtendedState>): ExtendedState {
+        return executePlan(plan, domain.initialState)
+    }
+
     /**
      * TFD Algorithm:
      * sigma: State-variable planning Domain
@@ -143,6 +147,19 @@ interface Plan<ExtendedState: State<ExtendedState>> {
 data class PlanObj<ExtendedState: State<ExtendedState>>(override var failed: Boolean = false,
                                                         override val actions: MutableList<Operator<ExtendedState>> =
                                                         mutableListOf()): Plan<ExtendedState> {
+}
+
+fun <ExtendedState: State<ExtendedState>> executePlan(plan: Plan<ExtendedState>,
+                                                      initialState: ExtendedState): ExtendedState {
+    if (plan.actions.isEmpty())
+        throw Exception("There is no plan to Execute! (Plan is empty)")
+    var finalState = initialState.deepCopy()
+    for (element in plan.actions) {
+        if (!element.satisfiesPreconditions(finalState))
+            throw Exception("Operator: $element could not be applied because it does not satisfy preconditions")
+        finalState = element.applyEffects(finalState)
+    }
+    return finalState
 }
 
 //interface Action: Operator
