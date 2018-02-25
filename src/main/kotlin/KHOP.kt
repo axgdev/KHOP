@@ -36,43 +36,60 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
                 val operator = task as Operator<ExtendedState>
                 if (verboseLevel > 2)
                     println("depth $depth action $operator")
+                if (!operator.satisfiesPreconditions(state)) {
+                    if (verboseLevel > 2)
+                        println("depth: $depth does not satisfy preconditions")
+                    plan.failed = true
+                    return plan
+                }
                 val newState = operator.applyEffects(state)
                 if (verboseLevel > 2)
                     println("depth: $depth new state: $newState")
                 val nextPlan = TFD_Without_SideEffects(newState, tasks, plan, depth + 1)
                 if (nextPlan.failed)
-                    Exception("Plan failed: " + nextPlan.toString())
-                nextPlan.actions.add(operator)
+                    throw Exception("Plan failed: " + nextPlan.toString())
+                nextPlan.actions.add(0, operator)
                 if (verboseLevel > 2)
                     println("Added operator: $operator to nextplan: $nextPlan and returning in depth: $depth")
                 return nextPlan
             }
             else {
-                val method: Method<ExtendedState>
+                var candidates: List<Method<ExtendedState>> = emptyList()
                 if (task is MethodGroup<*>) {
-                    val candidates = findApplicableMethod(task as MethodGroup<ExtendedState>, state)
+                    candidates = findApplicableMethod(task as MethodGroup<ExtendedState>, state)
                     if (candidates.isEmpty()) {
                         plan.failed = true
-                        Exception("Cannot find suitable method for: " + task::class.java.simpleName)
+                        throw Exception("Cannot find suitable method for: " + task::class.java.simpleName)
                     }
-                    method = chooseOneMethod(candidates)
                 }
                 else {
-                    method = task as Method<ExtendedState>
+                    candidates = listOf(task as Method<ExtendedState>)
                 }
-                if (verboseLevel > 2)
-                    println("depth: $depth method instance: $method")
-                val subTasks = method.decompose()
-                if (verboseLevel > 2)
-                    println("depth: $depth new tasks: $subTasks")
-                for (decomposedTask in method.decompose())
-                    tasks.push(decomposedTask)
-                return TFD_Without_SideEffects(state, tasks, plan, depth + 1)
+                for (method in candidates) {
+                    if (!method.satisfiesPreconditions(state))
+                        continue
+                    if (verboseLevel > 2)
+                        println("depth: $depth method instance: $method")
+                    val subTasks = method.decompose(state)
+                    if (verboseLevel > 2)
+                        println("depth: $depth new tasks: $subTasks")
+                    val decomposedTasks = method.decompose(state)
+                    if (verboseLevel > 2)
+                        println("depth: $depth decomposed tasks: $decomposedTasks")
+                    for (decomposedTask in decomposedTasks.reversed())
+                        tasks.push(decomposedTask)
+                    val nextPlan = TFD_Without_SideEffects(state, tasks, plan, depth + 1)
+                    if (nextPlan.failed)
+                        throw Exception("Plan failed: " + nextPlan.toString())
+                    if (verboseLevel > 2)
+                        println("Added method to plan: $method to nextplan: $nextPlan and returning in depth: $depth")
+                    return nextPlan
+                }
             }
         }
         if (verboseLevel > 2)
             println("depth: $depth returns failure")
-        Exception("No plan found!")
+//        throw Exception("No plan found!")
         return plan
     }
 
@@ -105,7 +122,7 @@ interface NetworkElement {
 
 interface Method<ExtendedState: State<ExtendedState>>: NetworkElement {
     fun satisfiesPreconditions(state: ExtendedState): Boolean
-    fun decompose(): List<NetworkElement>
+    fun decompose(state: ExtendedState): List<NetworkElement>
 }
 
 interface MethodGroup<ExtendedState: State<ExtendedState>>: NetworkElement {
