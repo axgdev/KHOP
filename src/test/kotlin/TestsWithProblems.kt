@@ -248,6 +248,62 @@ class TestsWithProblems {
 //                holding = falseHolding)
     }
 
+    /*
+    [('unstack', 1, 12), ('putdown', 1), ('unstack', 19, 18), ('putdown', 19),
+    ('unstack', 18, 17), ('putdown', 18), ('unstack', 17, 16), ('putdown', 17),
+    ('unstack', 9, 8), ('putdown', 9), ('unstack', 8, 7), ('putdown', 8),
+    ('unstack', 11, 10), ('stack', 11, 7), ('unstack', 10, 5), ('putdown', 10),
+    ('unstack', 5, 4), ('putdown', 5), ('unstack', 4, 14), ('putdown', 4),
+    ('pickup', 9), ('stack', 9, 4), ('pickup', 8), ('stack', 8, 9),
+    ('unstack', 14, 15), ('putdown', 14), ('unstack', 16, 3), ('stack', 16, 11),
+    ('unstack', 3, 2), ('stack', 3, 16), ('pickup', 2), ('stack', 2, 3),
+    ('unstack', 12, 13), ('stack', 12, 2), ('pickup', 13), ('stack', 13, 8), ('pickup', 15), ('stack', 15, 13)]
+     */
+
+    fun getComplexGoal_3_solutions(): List<PlanObj<BlocksState>> {
+        val alternative1 = PlanObj(false, mutableListOf(
+                Unstack("1", "12"), Putdown("1"),
+                Unstack("19", "18"), Putdown("19"),
+                Unstack("18", "17"), Putdown("18"),
+                Unstack("17", "16"), Putdown("17"),
+                Unstack("9", "8"), Putdown("9"),
+                Unstack("8", "7"), Putdown("8"),
+                Unstack("11", "10"), Stack("11", "7"),
+                Unstack("10", "5"), Putdown("10"),
+                Unstack("5", "4"), Putdown("5"),
+                Unstack("4", "14"), Putdown("4"),
+                Pickup("9"), Stack("9", "4"),
+                Pickup("8"), Stack("8", "9"),
+                Unstack("14", "15"), Putdown("14"),
+                Unstack("16", "3"), Stack("16", "11"),
+                Unstack("3", "2"), Stack("3", "16"),
+                Pickup("2"), Stack("2", "3"),
+                Unstack("12", "13"), Stack("12", "2"),
+                Pickup("13"), Stack("13", "8"),
+                Pickup("15"), Stack("15", "13")))
+        val alternative2 = PlanObj(false, mutableListOf(
+                Unstack("1", "12"), Putdown("1"),
+                Unstack("19", "18"), Putdown("19"),
+                Unstack("18", "17"), Putdown("18"),
+                Unstack("17", "16"), Putdown("17"),
+                Unstack("9", "8"), Putdown("9"),
+                Unstack("8", "7"), Putdown("8"),
+                Unstack("11", "10"), Stack("11", "7"),
+                Unstack("10", "5"), Putdown("10"),
+                Unstack("5", "4"), Putdown("5"),
+                Unstack("4", "14"), Putdown("4"),
+                Unstack("14", "15"), Putdown("14"),
+                Unstack("16", "3"), Stack("16", "11"),
+                Unstack("3", "2"), Stack("3", "16"),
+                Pickup("2"), Stack("2", "3"),
+                Unstack("12", "13"), Stack("12", "2"),
+                Pickup("9"), Stack("9", "4"),
+                Pickup("8"), Stack("8", "9"),
+                Pickup("13"), Stack("13", "8"),
+                Pickup("15"), Stack("15", "13")))
+        return listOf(alternative1,alternative2)
+    }
+
     @Test
     fun ComplexGoal_3a() {
         val initialState = getInitialNetwork3()
@@ -255,10 +311,10 @@ class TestsWithProblems {
                 "12:2", "2:3", "3:16", "16:11", "11:7", "7:6", "6:table"),
                 clear = mapOf(Pair("17",true),Pair("15",true),Pair("12",true)))
         val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_2b)))
-        val khop = KHOP(Domain(initialState, initialNetwork), 10)
+        val khop = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = khop.findPlan()
         println("Out of planner, plan: " + plan)
-        assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
+        assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_3_solutions(),plan))
     }
 
 
