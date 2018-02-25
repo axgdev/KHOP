@@ -142,6 +142,7 @@ class TestsWithProblems {
         val plan = khop.findPlan()
         println("Out of planner, plan: " + plan)
         assertEquals(getComplexGoal_1_Solution(), plan)
+        assertTrue(isGoalStateSatisfied(khop.executePlan(plan),goal_1a))
     }
 
     @Test
@@ -153,6 +154,7 @@ class TestsWithProblems {
         val plan = khop.findPlan()
         println("Out of planner, plan: " + plan)
         assertEquals(getComplexGoal_1_Solution(), plan)
+        assertTrue(isGoalStateSatisfied(khop.executePlan(plan),goal_1b))
     }
 
     fun getInitialNetwork2(): BlocksState {
@@ -199,6 +201,7 @@ class TestsWithProblems {
         val plan = khop.findPlan()
         println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
+        assertTrue(isGoalStateSatisfied(khop.executePlan(plan),goal_2a))
     }
 
     @Test
@@ -210,6 +213,7 @@ class TestsWithProblems {
         val plan = khop.findPlan()
         println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
+        assertTrue(isGoalStateSatisfied(khop.executePlan(plan),goal_2b))
     }
 
     fun getMapWithAllKeys(vararg keyValues: String): Map<String, String> {
