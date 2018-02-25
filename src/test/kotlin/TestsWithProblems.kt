@@ -231,34 +231,12 @@ class TestsWithProblems {
         clearS.replace("11", true)
         clearS.replace("9", true)
         clearS.replace("19", true)
-        //{1:12, 12:13, 13:'table', 11:10, 10:5, 5:4,
-        // 4:14, 14:15, 15:'table', 9:8, 8:7, 7:6, 6:'table',
-        // 19:18, 18:17, 17:16, 16:3, 3:2, 2:'table'}
         return BlocksState(pos = getMapWithAllKeys("1:12", "12:13", "13:table", "11:10", "10:5", "5:4",
                 "4:14", "14:15", "15:table", "9:8", "8:7", "7:6", "6:table",
                 "19:18", "18:17", "17:16", "16:3", "3:2", "2:table"),
                 clear = clearS.toMap(),
                 holding = falseHolding)
-//        return BlocksState(pos = mapOf(
-//                Pair("1","12"),Pair("12", "13"),Pair("13", table), Pair("11", "10"),Pair("10","5"),Pair("5", "4"),
-//                Pair("4", "14"), Pair("14", "15"), Pair("15",table),Pair("9", "8"),Pair("8", "7"),Pair("7", "6"),
-//                Pair("6", table), Pair("19", "18"), Pair("18","17"),Pair("17", "16"),Pair("16", "3"), Pair("3", "2"),
-//                Pair("2",table)),
-//                clear = clearS.toMap(),
-//                holding = falseHolding)
     }
-
-    /*
-    [('unstack', 1, 12), ('putdown', 1), ('unstack', 19, 18), ('putdown', 19),
-    ('unstack', 18, 17), ('putdown', 18), ('unstack', 17, 16), ('putdown', 17),
-    ('unstack', 9, 8), ('putdown', 9), ('unstack', 8, 7), ('putdown', 8),
-    ('unstack', 11, 10), ('stack', 11, 7), ('unstack', 10, 5), ('putdown', 10),
-    ('unstack', 5, 4), ('putdown', 5), ('unstack', 4, 14), ('putdown', 4),
-    ('pickup', 9), ('stack', 9, 4), ('pickup', 8), ('stack', 8, 9),
-    ('unstack', 14, 15), ('putdown', 14), ('unstack', 16, 3), ('stack', 16, 11),
-    ('unstack', 3, 2), ('stack', 3, 16), ('pickup', 2), ('stack', 2, 3),
-    ('unstack', 12, 13), ('stack', 12, 2), ('pickup', 13), ('stack', 13, 8), ('pickup', 15), ('stack', 15, 13)]
-     */
 
     fun getComplexGoal_3_solutions(): List<PlanObj<BlocksState>> {
         val alternative1 = PlanObj(false, mutableListOf(
