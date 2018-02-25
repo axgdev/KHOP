@@ -70,6 +70,6 @@ data class Put(val block1: String, val block2: String): Method<BlocksState> {
         if (block2 == table)
             return listOf(Putdown(block1))
         else
-            return listOf(Stack(block1, block2))
+            return listOf(StackOp(block1, block2))
     }
 }

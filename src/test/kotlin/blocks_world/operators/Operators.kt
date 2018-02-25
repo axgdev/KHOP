@@ -17,7 +17,7 @@ data class Putdown(val blockB: String): Operator<BlocksState> {
     }
 }
 
-data class Stack(val blockB: String, val blockC: String): Operator<BlocksState> {
+data class StackOp(val blockB: String, val blockC: String): Operator<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         checkDictionaryEntries(state, blockB, blockC)
         return state.pos[blockB] == hand && state.clear[blockC] == true
