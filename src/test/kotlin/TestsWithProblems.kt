@@ -225,7 +225,7 @@ class TestsWithProblems {
 
     fun getInitialNetwork3(): BlocksState {
         val clearS = mutableMapOf<String,Boolean>()
-        for (i in 1..20)
+        for (i in 1..19)
             clearS[i.toString()] = false
         clearS.replace("1", true)
         clearS.replace("11", true)
