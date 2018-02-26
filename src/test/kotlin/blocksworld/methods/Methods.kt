@@ -42,12 +42,12 @@ data class MoveOne(val block1: String, val dest: String): Method<BlocksState> {
     }
 
     override fun decompose(state: BlocksState): List<NetworkElement> {
-        return listOf(Get_m(block1), Put(block1, dest))
+        return listOf(GetM(block1), Put(block1, dest))
     }
 
 }
 
-data class Get_m(val block1: String): Method<BlocksState> {
+data class GetM(val block1: String): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         checkDictionaryEntries(state, block1)
         return state.clear[block1] == true

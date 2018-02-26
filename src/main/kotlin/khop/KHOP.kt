@@ -5,7 +5,7 @@ import java.util.*
 class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState>, val verboseLevel: Int = 0) {
 
     fun findPlan() =
-            TFD_Without_SideEffects(domain.initialState, domain.initialNetwork, PlanObj())
+            tfd(domain.initialState, domain.initialNetwork, PlanObj())
 
     fun executePlan(plan: Plan<ExtendedState>): ExtendedState {
         return executePlan(plan, domain.initialState)
@@ -19,7 +19,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
      * tasks: list of tasks
      * initialState: initial state
      */
-    fun TFD_Without_SideEffects(state: ExtendedState, tasks: Deque<NetworkElement>, plan: Plan<ExtendedState>, depth: Int = 0): Plan<ExtendedState> {
+    fun tfd(state: ExtendedState, tasks: Deque<NetworkElement>, plan: Plan<ExtendedState>, depth: Int = 0): Plan<ExtendedState> {
         if (verboseLevel > 1)
             println("depth: $depth tasks: $tasks")
         if (tasks.isEmpty()) {
@@ -51,7 +51,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
                 val newState = operator.applyEffects(state)
                 if (verboseLevel > 2)
                     println("depth: $depth new state: $newState")
-                val nextPlan = TFD_Without_SideEffects(newState, tasks, plan, depth + 1)
+                val nextPlan = tfd(newState, tasks, plan, depth + 1)
                 if (nextPlan.failed)
                     throw Exception("khop.Plan failed: " + nextPlan.toString())
                 nextPlan.actions.add(0, operator)
@@ -84,7 +84,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
                         println("depth: $depth decomposed tasks: $decomposedTasks")
                     for (decomposedTask in decomposedTasks.reversed())
                         tasks.push(decomposedTask)
-                    val nextPlan = TFD_Without_SideEffects(state, tasks, plan, depth + 1)
+                    val nextPlan = tfd(state, tasks, plan, depth + 1)
                     if (nextPlan.failed)
                         throw Exception("khop.Plan failed: " + nextPlan.toString())
                     if (verboseLevel > 2)
