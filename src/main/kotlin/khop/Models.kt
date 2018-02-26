@@ -31,6 +31,7 @@ data class PlanObj<ExtendedState: State<ExtendedState>>(override var failed: Boo
 }
 
 class Domain<ExtendedState: State<ExtendedState>>(val initialState: ExtendedState, val initialNetwork: Deque<NetworkElement>)
+
 abstract class State<ExtendedState: State<ExtendedState>> {
     abstract fun deepCopy(): ExtendedState
 }

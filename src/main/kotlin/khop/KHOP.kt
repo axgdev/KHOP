@@ -60,7 +60,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
                 return nextPlan
             }
             else {
-                var candidates: List<Method<ExtendedState>> = emptyList()
+                var candidates: List<Method<ExtendedState>>
                 if (task is MethodGroup<*>) {
                     candidates = findApplicableMethod(task as MethodGroup<ExtendedState>, state)
                     if (candidates.isEmpty()) {
