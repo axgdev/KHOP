@@ -8,11 +8,11 @@ import java.util.*
 
 class SimpleTravelExampleTests {
 
-    val london = Location("London", 51.507351, -0.127758)
-    val manchester = Location("Manchester", 53.480759, -2.242631)
-    val edinburgh = Location("Edinburgh", 55.953252, -3.188267)
-    val locations = arrayListOf(london, manchester, edinburgh)
-    val taxiDriver = SimplePerson(manchester)
+    private val london = Location("London", 51.507351, -0.127758)
+    private val manchester = Location("Manchester", 53.480759, -2.242631)
+    private val edinburgh = Location("Edinburgh", 55.953252, -3.188267)
+    private val locations = arrayListOf(london, manchester, edinburgh)
+    private val taxiDriver = SimplePerson(manchester)
 
     @Test
     fun travelByFootOperatorTest() {

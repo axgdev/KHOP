@@ -19,16 +19,16 @@ fun isDone(block1: String, state: BlocksState, goal: BlocksState): Boolean {
 
 fun status(block1: String, state: BlocksState, goal: BlocksState): Status {
     checkDictionaryEntries(state, block1)
-    if (isDone(block1, state, goal))
-        return Status.DONE
+    return if (isDone(block1, state, goal))
+        Status.DONE
     else if (!state.clear[block1]!!)
-        return Status.INACCESSIBLE
+        Status.INACCESSIBLE
     else if ((block1 !in goal.pos) || goal.pos[block1] == table)
-        return Status.MOVE_TO_TABLE
+        Status.MOVE_TO_TABLE
     else if (isDone(goal.pos[block1]!!, state, goal) && state.clear[goal.pos[block1]]!!)
-        return Status.MOVE_TO_BLOCK
+        Status.MOVE_TO_BLOCK
     else
-        return Status.WAITING
+        Status.WAITING
 }
 
 fun allBlocks(state: BlocksState) = state.clear.keys

@@ -8,7 +8,7 @@ import khop.NetworkElement
 import simpletravel.DomainFunctions
 import simpletravel.operators.*
 
-data class TravelByFoot(val fromLocation: Location, val toLocation: Location): Method<SimpleTravelState> {
+data class TravelByFoot(private val fromLocation: Location, private val toLocation: Location): Method<SimpleTravelState> {
     override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return fromLocation.distanceTo(toLocation) <= 300
     }
@@ -18,7 +18,7 @@ data class TravelByFoot(val fromLocation: Location, val toLocation: Location): M
     }
 }
 
-data class TravelByTaxi(val fromLocation: Location, val toLocation: Location): Method<SimpleTravelState> {
+data class TravelByTaxi(private val fromLocation: Location, private val toLocation: Location): Method<SimpleTravelState> {
     override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return state.person.cash >= DomainFunctions.taxiRate(fromLocation, toLocation)
     }
@@ -28,7 +28,7 @@ data class TravelByTaxi(val fromLocation: Location, val toLocation: Location): M
     }
 }
 
-data class Travel(val fromLocation: Location, val toLocation: Location): MethodGroup<SimpleTravelState> {
+data class Travel(private val fromLocation: Location, private val toLocation: Location): MethodGroup<SimpleTravelState> {
     override val methods =
             listOf(TravelByFoot(fromLocation, toLocation), TravelByTaxi(fromLocation, toLocation))
 }

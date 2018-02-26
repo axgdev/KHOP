@@ -1,8 +1,8 @@
 package blocksworld
 
-val table = "table"
-val hand = "hand"
-val falseHolding = "false"
+const val table = "table"
+const val hand = "hand"
+const val falseHolding = "false"
 
 enum class Status {
     DONE, INACCESSIBLE, MOVE_TO_TABLE, MOVE_TO_BLOCK, WAITING
@@ -24,9 +24,9 @@ fun <K, V> Map<K, V>.withReplacedEntries(vararg entries: Pair<K, V>): Map<K, V> 
 fun checkDictionaryEntries(state: BlocksState, vararg keys: String) {
     //I should be throwing the exception here but for some cases,
     //the code will run into this problem but still have an answer
-    for (key in keys)
-        if (!state.pos.containsKey(key) || !state.clear.containsKey(key))
-            Exception("Key not found: $key in state: $state")
+    keys
+            .filter { !state.pos.containsKey(it) || !state.clear.containsKey(it) }
+            .forEach { Exception("Key not found: $it in state: $state") }
 }
 
 fun isGoalStateSatisfied(comparingState: BlocksState, goalState: BlocksState): Boolean {

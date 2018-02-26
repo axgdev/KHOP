@@ -10,13 +10,13 @@ import org.junit.Test
 import java.util.*
 
 class BlockWorldComplexTests {
-    fun getInitialNetwork2(): BlocksState {
+    private fun getInitialNetwork2(): BlocksState {
         return BlocksState(pos = mapOf(Pair("a", "c"), Pair("b", "d"), Pair("c", table), Pair("d", table)),
                 clear = mapOf(Pair("a", true), Pair("c", false), Pair("b", true), Pair("d", false)),
                 holding = falseHolding)
     }
 
-    fun getComplexGoal_2_Solutions(): List<PlanObj<BlocksState>> {
+    private fun getComplexGoal_2_Solutions(): List<PlanObj<BlocksState>> {
         val alternativePlan1 = PlanObj(false, mutableListOf(
                 Unstack("b", "d"),
                 PutDown("b"),
@@ -36,7 +36,7 @@ class BlockWorldComplexTests {
         return listOf(alternativePlan1,alternativePlan2)
     }
 
-    fun satisfiesOneOfTheSolutions(expected: List<Any>, actual: Any): Boolean {
+    private fun satisfiesOneOfTheSolutions(expected: List<Any>, actual: Any): Boolean {
         var satisfiesAny = false
         for (alternativeSolution in expected)
             satisfiesAny = satisfiesAny || (alternativeSolution == actual)
@@ -69,7 +69,7 @@ class BlockWorldComplexTests {
         assertTrue(isGoalStateSatisfied(planner.executePlan(plan), goal))
     }
 
-    fun getMapWithAllKeys(vararg keyValues: String): Map<String, String> {
+    private fun getMapWithAllKeys(vararg keyValues: String): Map<String, String> {
         val resultingMap = mutableMapOf<String,String>()
         for (keyValue in keyValues) {
             val split = keyValue.split(":")
@@ -80,7 +80,7 @@ class BlockWorldComplexTests {
         return resultingMap.toMap()
     }
 
-    fun getInitialNetwork3(): BlocksState {
+    private fun getInitialNetwork3(): BlocksState {
         val clearS = mutableMapOf<String,Boolean>()
         for (i in 1..19)
             clearS[i.toString()] = false
@@ -95,7 +95,7 @@ class BlockWorldComplexTests {
                 holding = falseHolding)
     }
 
-    fun getComplexGoal_3_solutions(): List<PlanObj<BlocksState>> {
+    private fun getComplexGoal_3_solutions(): List<PlanObj<BlocksState>> {
         val alternative1 = PlanObj(false, mutableListOf(
                 Unstack("1", "12"), PutDown("1"),
                 Unstack("19", "18"), PutDown("19"),

@@ -8,7 +8,7 @@ import blocksworld.operators.*
 import khop.*
 
 class BlocksWorldSimpleTests {
-    fun getInitialNetworkProblemsSimpleTest(): BlocksState {
+    private fun getInitialNetworkProblemsSimpleTest(): BlocksState {
         return BlocksState(pos = mapOf(Pair("a", "b"), Pair("b", table), Pair("c", table)),
                 clear = mapOf(Pair("c", true), Pair("b", false), Pair("a", true)), holding = falseHolding)
     }
@@ -83,7 +83,7 @@ class BlocksWorldSimpleTests {
         assertEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
     }
 
-    fun getComplexGoal_1_Solution(): PlanObj<BlocksState> {
+    private fun getComplexGoal_1_Solution(): PlanObj<BlocksState> {
         return PlanObj(false, mutableListOf(
                 Unstack("a", "b"),
                 PutDown("a"),

@@ -5,7 +5,7 @@ import blocksworld.*
 import khop.Method
 import khop.NetworkElement
 
-data class MoveBlocks(val goal: BlocksState): Method<BlocksState> {
+data class MoveBlocks(private val goal: BlocksState): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         return true
     }
@@ -19,15 +19,8 @@ data class MoveBlocks(val goal: BlocksState): Method<BlocksState> {
                 checkDictionaryEntries(goal, block)
                 return listOf(MoveOne(block, goal.pos[block]!!), MoveBlocks(goal))
             }
-            else
-                continue
         }
-        var foundBlock = ""
-        for (block in allBlocks(state))
-            if (status(block, state, goal) == Status.WAITING) {
-                foundBlock = block
-                break
-            }
+        val foundBlock = allBlocks(state).firstOrNull { status(it, state, goal) == Status.WAITING } ?: ""
         if (foundBlock.isNotEmpty())
             return listOf(MoveOne(foundBlock, table), MoveBlocks(goal))
         return emptyList()
@@ -35,7 +28,7 @@ data class MoveBlocks(val goal: BlocksState): Method<BlocksState> {
 
 }
 
-data class MoveOne(val block1: String, val dest: String): Method<BlocksState> {
+data class MoveOne(private val block1: String, private val dest: String): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         return true
     }
@@ -46,29 +39,29 @@ data class MoveOne(val block1: String, val dest: String): Method<BlocksState> {
 
 }
 
-data class GetM(val block1: String): Method<BlocksState> {
+data class GetM(private val block1: String): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         checkDictionaryEntries(state, block1)
         return state.clear[block1] == true
     }
 
     override fun decompose(state: BlocksState): List<NetworkElement> {
-        if (state.pos[block1] == table)
-            return listOf(Pickup(block1))
+        return if (state.pos[block1] == table)
+            listOf(Pickup(block1))
         else
-            return listOf(Unstack(block1, state.pos[block1]!!))
+            listOf(Unstack(block1, state.pos[block1]!!))
     }
 }
 
-data class Put(val block1: String, val block2: String): Method<BlocksState> {
+data class Put(private val block1: String, private val block2: String): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         return state.holding == block1
     }
 
     override fun decompose(state: BlocksState): List<NetworkElement> {
-        if (block2 == table)
-            return listOf(PutDown(block1))
+        return if (block2 == table)
+            listOf(PutDown(block1))
         else
-            return listOf(StackOp(block1, block2))
+            listOf(StackOp(block1, block2))
     }
 }

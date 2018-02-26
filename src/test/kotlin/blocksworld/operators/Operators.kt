@@ -3,7 +3,7 @@ package blocksworld.operators
 import khop.Operator
 import blocksworld.*
 
-data class PutDown(val blockB: String): Operator<BlocksState> {
+data class PutDown(private val blockB: String): Operator<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         checkDictionaryEntries(state, blockB)
         return state.pos[blockB] == hand
@@ -17,7 +17,7 @@ data class PutDown(val blockB: String): Operator<BlocksState> {
     }
 }
 
-data class StackOp(val blockB: String, val blockC: String): Operator<BlocksState> {
+data class StackOp(private val blockB: String, private val blockC: String): Operator<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         checkDictionaryEntries(state, blockB, blockC)
         return state.pos[blockB] == hand && state.clear[blockC] == true
@@ -33,7 +33,7 @@ data class StackOp(val blockB: String, val blockC: String): Operator<BlocksState
 
 /*********************** OPERATORS ***********************/
 
-data class Pickup(val block: String): Operator<BlocksState> {
+data class Pickup(private val block: String): Operator<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         checkDictionaryEntries(state, block)
         return state.pos[block] == table && state.clear[block] == true && state.holding == falseHolding
@@ -47,7 +47,7 @@ data class Pickup(val block: String): Operator<BlocksState> {
     }
 }
 
-data class Unstack(val blockB: String, val blockC: String): Operator<BlocksState> {
+data class Unstack(private val blockB: String, private val blockC: String): Operator<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         checkDictionaryEntries(state, blockB, blockC)
         return state.pos[blockB] == blockC && blockC != table && state.clear[blockB] == true && state.holding == falseHolding

@@ -5,7 +5,7 @@ import simpletravel.model.SimpleTravelState
 import khop.Operator
 import simpletravel.DomainFunctions
 
-data class CallTaxi(val fromLocation: Location): Operator<SimpleTravelState> {
+data class CallTaxi(private val fromLocation: Location): Operator<SimpleTravelState> {
     override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return true
     }
@@ -37,7 +37,7 @@ class PayDriver: Operator<SimpleTravelState> {
     }
 }
 
-data class RideTaxi(val fromLocation: Location, val toLocation: Location): Operator<SimpleTravelState> {
+data class RideTaxi(private val fromLocation: Location, private val toLocation: Location): Operator<SimpleTravelState> {
     override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return state.taxiDriver.location == fromLocation && state.person.location == fromLocation
     }
@@ -50,7 +50,7 @@ data class RideTaxi(val fromLocation: Location, val toLocation: Location): Opera
     }
 }
 
-data class Walk(val fromLocation: Location, val toLocation: Location) : Operator<SimpleTravelState> {
+data class Walk(private val fromLocation: Location, private val toLocation: Location) : Operator<SimpleTravelState> {
     override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return state.person.location == fromLocation
     }

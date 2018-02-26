@@ -2,7 +2,7 @@ package khop
 
 import java.util.*
 
-class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState>, val verboseLevel: Int = 0) {
+class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<ExtendedState>, private val verboseLevel: Int = 0) {
 
     fun findPlan() =
             tfd(domain.initialState, domain.initialNetwork, PlanObj())
@@ -19,7 +19,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
      * tasks: list of tasks
      * initialState: initial state
      */
-    fun tfd(state: ExtendedState, tasks: Deque<NetworkElement>, plan: Plan<ExtendedState>, depth: Int = 0): Plan<ExtendedState> {
+    private fun tfd(state: ExtendedState, tasks: Deque<NetworkElement>, plan: Plan<ExtendedState>, depth: Int = 0): Plan<ExtendedState> {
         if (verboseLevel > 1)
             println("depth: $depth tasks: $tasks")
         if (tasks.isEmpty()) {
@@ -99,7 +99,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
         return plan
     }
 
-    fun isPrimitive(task: NetworkElement): Boolean {
+    private fun isPrimitive(task: NetworkElement): Boolean {
         return task is Operator<*>
     }
 
@@ -111,7 +111,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
 //        //return domain.operators.filter { it.task.name == task.name && it.satisfiesPreconditions(state) }
 //    }
 
-    fun findApplicableMethod(methodGroup: MethodGroup<ExtendedState>, state: ExtendedState): List<Method<ExtendedState>> {
+    private fun findApplicableMethod(methodGroup: MethodGroup<ExtendedState>, state: ExtendedState): List<Method<ExtendedState>> {
         return methodGroup.methods.filter { it.satisfiesPreconditions(state) }
     }
 
