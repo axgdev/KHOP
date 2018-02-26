@@ -1,26 +1,26 @@
 package simple_travel_example.operators
 
 import simple_travel_example.model.Location
-import simple_travel_example.model.MyState
+import simple_travel_example.model.SimpleTravelState
 import khop.Operator
 import simple_travel_example.DomainFunctions
 
-data class CallTaxi(val fromLocation: Location): Operator<MyState> {
-    override fun satisfiesPreconditions(state: MyState): Boolean {
+data class CallTaxi(val fromLocation: Location): Operator<SimpleTravelState> {
+    override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return true
     }
 
-    override fun applyEffects(state: MyState): MyState {
+    override fun applyEffects(state: SimpleTravelState): SimpleTravelState {
         return state.copy(taxiDriver = state.taxiDriver.copy(location = fromLocation))
     }
 }
 
-class PayDriver(): Operator<MyState> {
-    override fun satisfiesPreconditions(state: MyState): Boolean {
+class PayDriver(): Operator<SimpleTravelState> {
+    override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return state.person.cash >= state.person.owe
     }
 
-    override fun applyEffects(state: MyState): MyState {
+    override fun applyEffects(state: SimpleTravelState): SimpleTravelState {
         return state.copy(person = state.person.copy(cash = state.person.cash - state.person.owe, owe = 0.0))
     }
 
@@ -37,12 +37,12 @@ class PayDriver(): Operator<MyState> {
     }
 }
 
-data class RideTaxi(val fromLocation: Location, val toLocation: Location): Operator<MyState> {
-    override fun satisfiesPreconditions(state: MyState): Boolean {
+data class RideTaxi(val fromLocation: Location, val toLocation: Location): Operator<SimpleTravelState> {
+    override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return state.taxiDriver.location == fromLocation && state.person.location == fromLocation
     }
 
-    override fun applyEffects(state: MyState): MyState {
+    override fun applyEffects(state: SimpleTravelState): SimpleTravelState {
         return state.copy(
                 person = state.person.copy(location = toLocation, owe = DomainFunctions.taxiRate(fromLocation, toLocation)),
                 taxiDriver = state.taxiDriver.copy(location = toLocation)
@@ -50,12 +50,12 @@ data class RideTaxi(val fromLocation: Location, val toLocation: Location): Opera
     }
 }
 
-data class Walk(val fromLocation: Location, val toLocation: Location) : Operator<MyState> {
-    override fun satisfiesPreconditions(state: MyState): Boolean {
+data class Walk(val fromLocation: Location, val toLocation: Location) : Operator<SimpleTravelState> {
+    override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return state.person.location == fromLocation
     }
 
-    override fun applyEffects(state: MyState): MyState {
+    override fun applyEffects(state: SimpleTravelState): SimpleTravelState {
         return state.copy(person = state.person.copy(location = toLocation))
     }
 }
