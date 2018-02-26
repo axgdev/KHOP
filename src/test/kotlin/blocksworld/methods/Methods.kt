@@ -11,7 +11,7 @@ data class MoveBlocks(val goal: BlocksState): Method<BlocksState> {
     }
 
     override fun decompose(state: BlocksState): List<NetworkElement> {
-        for (block in state.clear.keys) {
+        for (block in allBlocks(state)) {
             val status = status(block, state, goal)
             if (status == Status.MOVE_TO_TABLE)
                 return listOf(MoveOne(block, table), MoveBlocks(goal))
@@ -24,7 +24,7 @@ data class MoveBlocks(val goal: BlocksState): Method<BlocksState> {
         }
 //        val block = state.clear.keys.filter { blocksworld.methods.status(it, state, goal) == blocksworld.Status.WAITING }
         var foundBlock = ""
-        for (block in state.clear.keys)
+        for (block in allBlocks(state))
             if (status(block, state, goal) == Status.WAITING) {
                 foundBlock = block
                 break
