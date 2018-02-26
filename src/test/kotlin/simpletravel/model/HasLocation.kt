@@ -1,5 +1,5 @@
 package simpletravel.model
 
-interface Localizable {
+interface HasLocation {
     val location: Location
 }

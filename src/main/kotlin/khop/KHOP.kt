@@ -56,7 +56,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
                     throw Exception("khop.Plan failed: " + nextPlan.toString())
                 nextPlan.actions.add(0, operator)
                 if (verboseLevel > 2)
-                    println("Added operator: $operator to nextplan: $nextPlan and returning in depth: $depth")
+                    println("Added operator: $operator to nextPlan: $nextPlan and returning in depth: $depth")
                 return nextPlan
             }
             else {
@@ -88,7 +88,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
                     if (nextPlan.failed)
                         throw Exception("khop.Plan failed: " + nextPlan.toString())
                     if (verboseLevel > 2)
-                        println("Added method to plan: $method to nextplan: $nextPlan and returning in depth: $depth")
+                        println("Added method to plan: $method to nextPlan: $nextPlan and returning in depth: $depth")
                     return nextPlan
                 }
             }

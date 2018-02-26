@@ -3,7 +3,7 @@ package blocksworld.operators
 import khop.Operator
 import blocksworld.*
 
-data class Putdown(val blockB: String): Operator<BlocksState> {
+data class PutDown(val blockB: String): Operator<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         checkDictionaryEntries(state, blockB)
         return state.pos[blockB] == hand

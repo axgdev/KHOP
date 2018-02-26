@@ -68,7 +68,7 @@ data class Put(val block1: String, val block2: String): Method<BlocksState> {
 
     override fun decompose(state: BlocksState): List<NetworkElement> {
         if (block2 == table)
-            return listOf(Putdown(block1))
+            return listOf(PutDown(block1))
         else
             return listOf(StackOp(block1, block2))
     }
