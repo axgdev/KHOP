@@ -22,7 +22,6 @@ data class MoveBlocks(val goal: BlocksState): Method<BlocksState> {
             else
                 continue
         }
-//        val block = state.clear.keys.filter { blocksworld.methods.status(it, state, goal) == blocksworld.Status.WAITING }
         var foundBlock = ""
         for (block in allBlocks(state))
             if (status(block, state, goal) == Status.WAITING) {
