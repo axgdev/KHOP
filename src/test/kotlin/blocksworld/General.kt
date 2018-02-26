@@ -3,7 +3,6 @@ package blocksworld
 val table = "table"
 val hand = "hand"
 val falseHolding = "false"
-val trueHolding = "true"
 
 enum class Status {
     DONE, INACCESSIBLE, MOVE_TO_TABLE, MOVE_TO_BLOCK, WAITING
