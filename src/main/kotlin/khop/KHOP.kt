@@ -119,20 +119,21 @@ class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState
 //
 //    }
 
-
-}
-
-fun <ExtendedState: State<ExtendedState>> executePlan(plan: Plan<ExtendedState>,
-                                                           initialState: ExtendedState): ExtendedState {
-    if (plan.actions.isEmpty())
-        throw Exception("There is no plan to Execute! (khop.Plan is empty)")
-    var finalState = initialState.deepCopy()
-    for (element in plan.actions) {
-        if (!element.satisfiesPreconditions(finalState))
-            throw Exception("khop.Operator: $element could not be applied because it does not satisfy preconditions")
-        finalState = element.applyEffects(finalState)
+    companion object {
+        fun <ExtendedState: State<ExtendedState>> executePlan(plan: Plan<ExtendedState>,
+                                                              initialState: ExtendedState): ExtendedState {
+            if (plan.actions.isEmpty())
+                throw Exception("There is no plan to Execute! (khop.Plan is empty)")
+            var finalState = initialState.deepCopy()
+            for (element in plan.actions) {
+                if (!element.satisfiesPreconditions(finalState))
+                    throw Exception("khop.Operator: $element could not be applied because it does not satisfy preconditions")
+                finalState = element.applyEffects(finalState)
+            }
+            return finalState
+        }
     }
-    return finalState
+
 }
 
 
