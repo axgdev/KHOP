@@ -23,7 +23,7 @@ class SimpleTravelExampleTests {
         val plan = mkhop.findPlan()
         println("out of planner, plan: " + plan)
         val expectedActions = mutableListOf(Walk(london, manchester) as Operator<SimpleTravelState>)
-        val expectedPlan = PlanObj<SimpleTravelState>(actions = expectedActions)
+        val expectedPlan = PlanObj(actions = expectedActions)
         assertEquals(expectedPlan, plan)
     }
 
@@ -35,7 +35,7 @@ class SimpleTravelExampleTests {
         val mkhop = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = mkhop.findPlan()
         println("out of planner, plan: " + plan)
-        assertEquals(PlanObj<SimpleTravelState>(actions = mutableListOf(
+        assertEquals(PlanObj(actions = mutableListOf(
                 CallTaxi(london),
                 RideTaxi(london, edinburgh),
                 PayDriver())), plan)

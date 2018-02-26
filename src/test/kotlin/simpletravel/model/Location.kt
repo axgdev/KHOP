@@ -2,7 +2,7 @@ package simpletravel.model
 
 data class Location(val name: String, val latitude: Double, val longitude: Double) {
     fun distanceToInKm(startLati: Double, startLong: Double, endLati: Double, endLong: Double): Double {
-        val earthRadius = 6371;
+        val earthRadius = 6371
         val diffLati = Math.toRadians(endLati - startLati)
         val diffLong = Math.toRadians(endLong - startLong)
         /**

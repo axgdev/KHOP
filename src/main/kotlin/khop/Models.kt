@@ -2,9 +2,7 @@ package khop
 
 import java.util.*
 
-interface NetworkElement {
-
-}
+interface NetworkElement
 
 interface Method<ExtendedState: State<ExtendedState>>: NetworkElement {
     fun satisfiesPreconditions(state: ExtendedState): Boolean
@@ -27,8 +25,7 @@ interface Plan<ExtendedState: State<ExtendedState>> {
 
 data class PlanObj<ExtendedState: State<ExtendedState>>(override var failed: Boolean = false,
                                                              override val actions: MutableList<Operator<ExtendedState>> =
-                                                        mutableListOf()): Plan<ExtendedState> {
-}
+                                                        mutableListOf()): Plan<ExtendedState>
 
 class Domain<ExtendedState: State<ExtendedState>>(val initialState: ExtendedState, val initialNetwork: Deque<NetworkElement>)
 

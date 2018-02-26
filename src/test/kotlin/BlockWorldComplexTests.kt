@@ -17,7 +17,7 @@ class BlockWorldComplexTests {
     }
 
     fun getComplexGoal_2_Solutions(): List<PlanObj<BlocksState>> {
-        val alternativePlan1 = PlanObj<BlocksState>(false, mutableListOf(
+        val alternativePlan1 = PlanObj(false, mutableListOf(
                 Unstack("b", "d"),
                 Putdown("b"),
                 Unstack("a", "c"),
@@ -25,7 +25,7 @@ class BlockWorldComplexTests {
                 Pickup("b"),
                 StackOp("b", "c"))
         )
-        val alternativePlan2 = PlanObj<BlocksState>(false, mutableListOf(
+        val alternativePlan2 = PlanObj(false, mutableListOf(
                 Unstack("a", "c"),
                 Putdown("a"),
                 Unstack("b", "d"),
@@ -44,7 +44,7 @@ class BlockWorldComplexTests {
     }
 
     @Test
-    fun ComplexGoal_2a() {
+    fun complexGoal_2a() {
         val initialState = getInitialNetwork2()
         val goal_2a = BlocksState(pos = mapOf(Pair("b", "c"), Pair("a", "d"), Pair("c", table), Pair("d", table)),
                 clear = mapOf(Pair("a", true), Pair("c", false), Pair("b", true), Pair("d", false)),
@@ -58,7 +58,7 @@ class BlockWorldComplexTests {
     }
 
     @Test
-    fun ComplexGoal_2b() {
+    fun complexGoal_2b() {
         val initialState = getInitialNetwork2()
         val goal_2b = BlocksState(pos = mapOf(Pair("b", "c"), Pair("a", "d")))
         val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal_2b)))
@@ -140,7 +140,7 @@ class BlockWorldComplexTests {
     }
 
     @Test
-    fun ComplexGoal_3a() {
+    fun complexGoal_3a() {
         val initialState = getInitialNetwork3()
         val goal_2b = BlocksState(pos = getMapWithAllKeys("15:13", "13:8", "8:9", "9:4", "4:table",
                 "12:2", "2:3", "3:16", "16:11", "11:7", "7:6", "6:table"),

@@ -15,7 +15,7 @@ data class CallTaxi(val fromLocation: Location): Operator<SimpleTravelState> {
     }
 }
 
-class PayDriver(): Operator<SimpleTravelState> {
+class PayDriver: Operator<SimpleTravelState> {
     override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {
         return state.person.cash >= state.person.owe
     }

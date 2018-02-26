@@ -5,7 +5,7 @@ import java.util.*
 class KHOP<ExtendedState: State<ExtendedState>>(val domain: Domain<ExtendedState>, val verboseLevel: Int = 0) {
 
     fun findPlan() =
-            TFD_Without_SideEffects(domain.initialState, domain.initialNetwork, PlanObj<ExtendedState>())
+            TFD_Without_SideEffects(domain.initialState, domain.initialNetwork, PlanObj())
 
     fun executePlan(plan: Plan<ExtendedState>): ExtendedState {
         return executePlan(plan, domain.initialState)
