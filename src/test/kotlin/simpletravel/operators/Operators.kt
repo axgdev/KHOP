@@ -1,9 +1,9 @@
-package simple_travel_example.operators
+package simpletravel.operators
 
-import simple_travel_example.model.Location
-import simple_travel_example.model.SimpleTravelState
+import simpletravel.model.Location
+import simpletravel.model.SimpleTravelState
 import khop.Operator
-import simple_travel_example.DomainFunctions
+import simpletravel.DomainFunctions
 
 data class CallTaxi(val fromLocation: Location): Operator<SimpleTravelState> {
     override fun satisfiesPreconditions(state: SimpleTravelState): Boolean {

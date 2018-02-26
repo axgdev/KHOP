@@ -1,6 +1,6 @@
-package simple_travel_example
+package simpletravel
 
-import simple_travel_example.model.Location
+import simpletravel.model.Location
 
 object DomainFunctions {
     fun taxiRate(location1: Location, location2: Location): Double {

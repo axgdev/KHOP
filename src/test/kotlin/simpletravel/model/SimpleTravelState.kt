@@ -1,4 +1,4 @@
-package simple_travel_example.model
+package simpletravel.model
 
 import khop.State
 

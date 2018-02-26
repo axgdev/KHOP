@@ -1,3 +1,3 @@
-package simple_travel_example.model
+package simpletravel.model
 
 data class SimplePerson(override val location: Location): Localizable

@@ -1,7 +1,7 @@
-package blocks_world.methods
+package blocksworld.methods
 
-import blocks_world.operators.*
-import blocks_world.*
+import blocksworld.operators.*
+import blocksworld.*
 import khop.Method
 import khop.NetworkElement
 
@@ -22,7 +22,7 @@ data class MoveBlocks(val goal: BlocksState): Method<BlocksState> {
             else
                 continue
         }
-//        val block = state.clear.keys.filter { blocks_world.methods.status(it, state, goal) == blocks_world.Status.WAITING }
+//        val block = state.clear.keys.filter { blocksworld.methods.status(it, state, goal) == blocksworld.Status.WAITING }
         var foundBlock = ""
         for (block in state.clear.keys)
             if (status(block, state, goal) == Status.WAITING) {

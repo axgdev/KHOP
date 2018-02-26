@@ -1,4 +1,4 @@
-package blocks_world
+package blocksworld
 
 import khop.State
 

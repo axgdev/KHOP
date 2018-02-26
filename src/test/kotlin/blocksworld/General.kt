@@ -1,4 +1,4 @@
-package blocks_world
+package blocksworld
 
 val table = "table"
 val hand = "hand"

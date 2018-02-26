@@ -1,9 +1,9 @@
-package blocks_world.methods
+package blocksworld.methods
 
-import blocks_world.BlocksState
-import blocks_world.Status
-import blocks_world.checkDictionaryEntries
-import blocks_world.table
+import blocksworld.BlocksState
+import blocksworld.Status
+import blocksworld.checkDictionaryEntries
+import blocksworld.table
 
 //Helper functions
 fun isDone(block1: String, state: BlocksState, goal: BlocksState): Boolean {

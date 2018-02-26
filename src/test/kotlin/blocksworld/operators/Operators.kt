@@ -1,7 +1,7 @@
-package blocks_world.operators
+package blocksworld.operators
 
 import khop.Operator
-import blocks_world.*
+import blocksworld.*
 
 data class Putdown(val blockB: String): Operator<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {

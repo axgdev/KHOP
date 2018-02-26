@@ -1,8 +1,8 @@
-package simple_travel_example.model
+package simpletravel.model
 
 data class Location(val name: String, val latitude: Double, val longitude: Double) {
     fun distanceToInKm(startLati: Double, startLong: Double, endLati: Double, endLong: Double): Double {
-        val earth_radius = 6371;
+        val earthRadius = 6371;
         val diffLati = Math.toRadians(endLati - startLati)
         val diffLong = Math.toRadians(endLong - startLong)
         /**
@@ -18,7 +18,7 @@ data class Location(val name: String, val latitude: Double, val longitude: Doubl
         val a = Math.pow(Math.sin(diffLati / 2), 2.0) + Math.pow(Math.sin(diffLong / 2), 2.0) * Math.cos(radiusStartLati) * Math.cos(radiusEndLati)
         val c = 2 * Math.asin(Math.sqrt(a))
 
-        return earth_radius * c
+        return earthRadius * c
     }
 
     fun distanceTo(toLocation: Location): Double {

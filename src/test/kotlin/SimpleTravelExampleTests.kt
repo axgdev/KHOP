@@ -1,9 +1,9 @@
 import khop.*
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import simple_travel_example.methods.Travel
-import simple_travel_example.model.*
-import simple_travel_example.operators.*
+import simpletravel.methods.Travel
+import simpletravel.model.*
+import simpletravel.operators.*
 import java.util.*
 
 class SimpleTravelExampleTests {

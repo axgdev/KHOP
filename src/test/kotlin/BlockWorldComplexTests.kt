@@ -1,6 +1,6 @@
-import blocks_world.*
-import blocks_world.methods.*
-import blocks_world.operators.*
+import blocksworld.*
+import blocksworld.methods.*
+import blocksworld.operators.*
 import khop.Domain
 import khop.KHOP
 import khop.NetworkElement
