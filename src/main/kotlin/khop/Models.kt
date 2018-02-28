@@ -9,6 +9,21 @@ interface Method<ExtendedState: State<ExtendedState>>: NetworkElement {
     fun decompose(state: ExtendedState): List<NetworkElement>
 }
 
+class SingleOpMethod<ExtendedState: State<ExtendedState>>(val element: Operator<ExtendedState>): Method<ExtendedState> {
+    override fun satisfiesPreconditions(state: ExtendedState): Boolean {
+        return element.satisfiesPreconditions(state)
+    }
+
+    override fun decompose(state: ExtendedState): List<NetworkElement> {
+        return listOf(element)
+    }
+}
+
+class PassthroughOperator<ExtendedState: State<ExtendedState>>: Operator<ExtendedState> {
+    override fun satisfiesPreconditions(state: ExtendedState) = true
+    override fun applyEffects(state: ExtendedState) = state
+}
+
 interface MethodGroup<ExtendedState: State<ExtendedState>>: NetworkElement {
     val methods: List<Method<ExtendedState>>
 }
