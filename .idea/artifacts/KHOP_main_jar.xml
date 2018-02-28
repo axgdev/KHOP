@@ -7,6 +7,9 @@
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.2.21/86407aed2dc197bd5f61d16e759c4ff43678732a/kotlin-stdlib-jdk8-1.2.21.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.2.21/88bfff5aa470143a83b0bc5ec00c0be8cabd7cad/kotlin-stdlib-jdk7-1.2.21.jar" path-in-jar="/" />
+      <element id="directory" name="src">
+        <element id="dir-copy" path="$PROJECT_DIR$/src/main/kotlin/khop" />
+      </element>
     </root>
   </artifact>
 </component>
