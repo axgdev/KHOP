@@ -48,6 +48,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<Exten
                     plan.failed = true
                     return plan
                 }
+                plan.failed = false
                 val newState = operator.applyEffects(state)
                 if (verboseLevel > 2)
                     println("depth: $depth new state: $newState")
@@ -85,11 +86,13 @@ class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<Exten
                     for (decomposedTask in decomposedTasks.reversed())
                         tasks.push(decomposedTask)
                     val nextPlan = tfd(state, tasks, plan, depth + 1)
-                    if (nextPlan.failed)
-                        throw Exception("khop.Plan failed: " + nextPlan.toString())
-                    if (verboseLevel > 2)
-                        println("Added method to plan: $method to nextPlan: $nextPlan and returning in depth: $depth")
-                    return nextPlan
+//                    if (nextPlan.failed)
+//                        throw Exception("khop.Plan failed: " + nextPlan.toString())
+                    if (!nextPlan.failed) {
+                        if (verboseLevel > 2)
+                            println("Added method to plan: $method to nextPlan: $nextPlan and returning in depth: $depth")
+                        return nextPlan
+                    }
                 }
             }
         }
