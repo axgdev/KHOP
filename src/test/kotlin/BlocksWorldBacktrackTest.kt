@@ -17,7 +17,7 @@ class BlocksWorldBacktrackTest {
         val initialNetwork = LinkedList<NetworkElement>(listOf(GetMG("a")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        assertEquals(PlanObj<BlocksState>(false, mutableListOf(Unstack("a", "b"))), plan)
+        assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Unstack("a", "b"))), plan)
     }
 
     @Test
@@ -26,7 +26,7 @@ class BlocksWorldBacktrackTest {
         val initialNetwork = LinkedList<NetworkElement>(listOf(GetMG("c")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        assertEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
+        assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
     }
 
     @Test(expected = Exception::class)
