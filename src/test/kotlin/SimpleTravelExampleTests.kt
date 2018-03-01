@@ -21,7 +21,6 @@ class SimpleTravelExampleTests {
         val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, manchester)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        println("out of planner, plan: " + plan)
         val expectedActions = mutableListOf(Walk(london, manchester) as Operator<SimpleTravelState>)
         val expectedPlan = PlanObj(actions = expectedActions)
         assertEquals(expectedPlan, plan)
@@ -34,7 +33,6 @@ class SimpleTravelExampleTests {
         val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, edinburgh)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        println("out of planner, plan: " + plan)
         assertEquals(PlanObj(actions = mutableListOf(
                 CallTaxi(london),
                 RideTaxi(london, edinburgh),

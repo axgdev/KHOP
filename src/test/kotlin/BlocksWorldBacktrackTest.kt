@@ -19,7 +19,6 @@ class BlocksWorldBacktrackTest {
         val initialNetwork = LinkedList<NetworkElement>(listOf(GetMG("a")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        println("Out of planner, plan: " + plan)
         assertEquals(PlanObj<BlocksState>(false, mutableListOf(Unstack("a", "b"))), plan)
     }
 
@@ -29,7 +28,6 @@ class BlocksWorldBacktrackTest {
         val initialNetwork = LinkedList<NetworkElement>(listOf(GetMG("c")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        println("Out of planner, plan: " + plan)
         assertEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
     }
 
@@ -39,6 +37,5 @@ class BlocksWorldBacktrackTest {
         val initialNetwork = LinkedList<NetworkElement>(listOf(GetMG("b")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        println("Out of planner, plan: " + plan)
     }
 }

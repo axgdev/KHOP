@@ -52,7 +52,6 @@ class BlockWorldComplexTests {
         val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
         assertTrue(isGoalStateSatisfied(planner.executePlan(plan), goal))
     }
@@ -64,7 +63,6 @@ class BlockWorldComplexTests {
         val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
         assertTrue(isGoalStateSatisfied(planner.executePlan(plan), goal))
     }
@@ -148,7 +146,6 @@ class BlockWorldComplexTests {
         val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
-        println("Out of planner, plan: " + plan)
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_3_solutions(),plan))
         val finalState = planner.executePlan(plan)
         assertTrue(isGoalStateSatisfied(finalState, goal))
