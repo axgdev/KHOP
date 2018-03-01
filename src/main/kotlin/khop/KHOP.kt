@@ -2,9 +2,10 @@ package khop
 
 import java.util.*
 
-class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<ExtendedState>, private val verboseLevel: Int = 0) {
+class KHOP<ExtendedState: State<ExtendedState>>
+    @JvmOverloads constructor(private val domain: Domain<ExtendedState>, private val verboseLevel: Int = 0) {
 
-    fun findPlan(methodChooser: MethodChooserFunction<ExtendedState> = ::firstPlanWithLeastSteps): Plan<ExtendedState> {
+    @JvmOverloads fun findPlan(methodChooser: MethodChooserFunction<ExtendedState> = ::firstPlanWithLeastSteps): Plan<ExtendedState> {
         debugMessage(System.lineSeparator() + "initialState: ${domain.initialState}" + System.lineSeparator() + "initialNetwork: ${domain.initialNetwork}, methodChooser: $methodChooser", 0)
         val plan = tfd(domain.initialState, domain.initialNetwork, PlanObj(), methodChooser = methodChooser)
         debugMessage("returnedPlan: $plan", 0)
