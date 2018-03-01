@@ -34,6 +34,6 @@ class BlocksWorldBacktrackTest {
         val initialState = getInitialNetworkProblemsSimpleTest()
         val initialNetwork = LinkedList<NetworkElement>(listOf(GetMG("b")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
-        val plan = planner.findPlan()
+        planner.findPlan()
     }
 }
