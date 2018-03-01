@@ -9,7 +9,7 @@ interface Method<ExtendedState: State<ExtendedState>>: NetworkElement {
     fun decompose(state: ExtendedState): List<NetworkElement>
 }
 
-class SingleOpMethod<ExtendedState: State<ExtendedState>>(val element: Operator<ExtendedState>): Method<ExtendedState> {
+class SingleOpMethod<ExtendedState: State<ExtendedState>>(private val element: Operator<ExtendedState>): Method<ExtendedState> {
     override fun satisfiesPreconditions(state: ExtendedState): Boolean {
         return element.satisfiesPreconditions(state)
     }
@@ -53,8 +53,6 @@ abstract class State<ExtendedState: State<ExtendedState>> {
     abstract fun deepCopy(): ExtendedState
 }
 
-data class MethodPlan<ExtendedState: State<ExtendedState>>(val method: Method<ExtendedState>,
-                                                           val plan: Plan<ExtendedState>) {
-}
+data class MethodPlan<ExtendedState: State<ExtendedState>>(val method: Method<ExtendedState>, val plan: Plan<ExtendedState>)
 
 typealias MethodChooserFunction<ExtendedState> = (methodsStatesPlans: List<MethodPlan<ExtendedState>>) -> MethodPlan<ExtendedState>

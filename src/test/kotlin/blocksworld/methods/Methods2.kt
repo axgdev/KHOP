@@ -6,7 +6,7 @@ import khop.Method
 import khop.MethodGroup
 import khop.NetworkElement
 
-data class GetByUnstack(val block: String): Method<BlocksState> {
+data class GetByUnstack(private val block: String): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         return state.clear[block]!!
     }
@@ -16,7 +16,7 @@ data class GetByUnstack(val block: String): Method<BlocksState> {
     }
 }
 
-data class GetByPickup(val block: String): Method<BlocksState> {
+data class GetByPickup(private val block: String): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         return state.clear[block]!!
     }
@@ -26,7 +26,7 @@ data class GetByPickup(val block: String): Method<BlocksState> {
     }
 }
 
-data class PickupM(val block: String): Method<BlocksState> {
+data class PickupM(private val block: String): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         return state.clear[block]!!
     }
@@ -36,7 +36,7 @@ data class PickupM(val block: String): Method<BlocksState> {
     }
 }
 
-data class UnstackM(val block: String): Method<BlocksState> {
+data class UnstackM(private val block: String): Method<BlocksState> {
     override fun satisfiesPreconditions(state: BlocksState): Boolean {
         return state.clear[block]!!
     }
@@ -48,7 +48,7 @@ data class UnstackM(val block: String): Method<BlocksState> {
 }
 
 
-data class GetMG(val block1: String): MethodGroup<BlocksState> {
+data class GetMG(private val block1: String): MethodGroup<BlocksState> {
     override val methods: List<Method<BlocksState>> = getTheMethods()
 
     private fun getTheMethods(): List<Method<BlocksState>> {

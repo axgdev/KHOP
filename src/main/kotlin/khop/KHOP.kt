@@ -153,7 +153,7 @@ class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<Exten
         return chosenMethodPlan
     }
 
-    fun debugMessage(message: String, minVerboseLevel: Int) {
+    private fun debugMessage(message: String, minVerboseLevel: Int) {
         if (verboseLevel > minVerboseLevel)
             println(message)
     }
