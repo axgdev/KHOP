@@ -1,5 +1,6 @@
 import khop.*
 import org.junit.Test
+import org.junit.Assert.assertEquals
 import simpletravel.methods.Travel
 import simpletravel.model.*
 import simpletravel.operators.*
@@ -13,28 +14,45 @@ class SimpleTravelExampleTests {
     private val locations = arrayListOf(london, manchester, edinburgh)
     private val taxiDriver = SimplePerson(manchester)
 
-    @Test
-    fun travelByFootOperatorTest() {
+    fun getTravelByFootTestPlanner(): KHOP<SimpleTravelState> {
         val axel = Person(london, 0.0, 0.0)
         val initialState = SimpleTravelState(axel, taxiDriver, locations)
         val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, manchester)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
-        val plan = planner.findPlan()
+        return planner
+    }
+
+    @Test
+    fun travelByFootOperatorTest() {
+        val plan = getTravelByFootTestPlanner().findPlan()
         val expectedActions = mutableListOf(Walk(london, manchester) as Operator<SimpleTravelState>)
         val expectedPlan = PlanObj(actions = expectedActions)
         assertPlanActionStatusEquals(expectedPlan, plan)
     }
 
-    @Test
-    fun travelByTaxiMethodTest() {
+    fun getTravelByTaxiTestPlanner(): KHOP<SimpleTravelState> {
         val axel = Person(london, 534.0 * 1000, 0.0)
         val initialState = SimpleTravelState(axel, taxiDriver, locations)
         val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, edinburgh)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
-        val plan = planner.findPlan()
+        return planner
+    }
+
+    @Test
+    fun travelByTaxiMethodTest() {
+        val plan = getTravelByTaxiTestPlanner().findPlan()
         assertPlanActionStatusEquals(PlanObj(actions = mutableListOf(
                 CallTaxi(london),
                 RideTaxi(london, edinburgh),
                 PayDriver())), plan)
+    }
+
+    @Test
+    fun planShouldReturnSameStateAsPlanExecution() {
+        val planners = listOf(getTravelByFootTestPlanner(), getTravelByTaxiTestPlanner())
+        for (planner in planners) {
+            val plan = planner.findPlan()
+            assertEquals(plan.state, planner.executePlan(plan))
+        }
     }
 }

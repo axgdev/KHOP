@@ -3,6 +3,7 @@ import blocksworld.methods.*
 import blocksworld.operators.*
 import khop.*
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.*
 
@@ -41,28 +42,44 @@ class BlockWorldComplexTests {
         return satisfiesAny
     }
 
-    @Test
-    fun complexGoal_2a() {
+    fun getComplexGoal2aPlanner(): KHOP<BlocksState> {
         val initialState = getInitialNetwork2()
-        val goal = BlocksState(pos = mapOf(Pair("b", "c"), Pair("a", "d"), Pair("c", table), Pair("d", table)),
+        val goal = getComplex2aGoal()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
+        return KHOP(Domain(initialState, initialNetwork), 1)
+    }
+
+    fun getComplex2aGoal(): BlocksState {
+        return BlocksState(pos = mapOf(Pair("b", "c"), Pair("a", "d"), Pair("c", table), Pair("d", table)),
                 clear = mapOf(Pair("a", true), Pair("c", false), Pair("b", true), Pair("d", false)),
                 holding = falseHolding)
-        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
-        val planner = KHOP(Domain(initialState, initialNetwork), 1)
+    }
+
+    @Test
+    fun complexGoal_2a() {
+        val planner = getComplexGoal2aPlanner()
         val plan = planner.findPlan()
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
-        assertTrue(isGoalStateSatisfied(planner.executePlan(plan), goal))
+        assertTrue(isGoalStateSatisfied(planner.executePlan(plan), getComplex2aGoal()))
+    }
+
+    fun getComplexGoal2bPlanner(): KHOP<BlocksState> {
+        val initialState = getInitialNetwork2()
+        val goal = getComplex2bGoal()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
+        return KHOP(Domain(initialState, initialNetwork), 1)
+    }
+
+    fun getComplex2bGoal(): BlocksState {
+        return BlocksState(pos = mapOf(Pair("b", "c"), Pair("a", "d")))
     }
 
     @Test
     fun complexGoal_2b() {
-        val initialState = getInitialNetwork2()
-        val goal = BlocksState(pos = mapOf(Pair("b", "c"), Pair("a", "d")))
-        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
-        val planner = KHOP(Domain(initialState, initialNetwork), 1)
+        val planner = getComplexGoal2bPlanner()
         val plan = planner.findPlan()
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_2_Solutions(),plan))
-        assertTrue(isGoalStateSatisfied(planner.executePlan(plan), goal))
+        assertTrue(isGoalStateSatisfied(planner.executePlan(plan), getComplex2bGoal()))
     }
 
     private fun getMapWithAllKeys(vararg keyValues: String): Map<String, String> {
@@ -135,18 +152,36 @@ class BlockWorldComplexTests {
         return listOf(alternative1,alternative2)
     }
 
-    @Test
-    fun complexGoal_3a() {
+    fun getComplexGoal3aPlanner(): KHOP<BlocksState> {
         val initialState = getInitialNetwork3()
-        val goal = BlocksState(pos = getMapWithAllKeys("15:13", "13:8", "8:9", "9:4", "4:table",
+        val goal = getComplex3aGoal()
+        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
+        return KHOP(Domain(initialState, initialNetwork), 1)
+    }
+
+    fun getComplex3aGoal(): BlocksState {
+        return BlocksState(pos = getMapWithAllKeys("15:13", "13:8", "8:9", "9:4", "4:table",
                 "12:2", "2:3", "3:16", "16:11", "11:7", "7:6", "6:table"),
                 clear = mapOf(Pair("17", true), Pair("15", true), Pair("12", true)))
-        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
-        val planner = KHOP(Domain(initialState, initialNetwork), 1)
+    }
+
+    @Test
+    fun complexGoal_3a() {
+        val goal = getComplex3aGoal()
+        val planner = getComplexGoal3aPlanner()
         val plan = planner.findPlan()
         assertTrue(satisfiesOneOfTheSolutions(getComplexGoal_3_solutions(),plan))
         val finalState = planner.executePlan(plan)
         assertTrue(isGoalStateSatisfied(finalState, goal))
+    }
+
+    @Test
+    fun planShouldReturnSameStateAsPlanExecution() {
+        val planners = listOf(getComplexGoal2aPlanner(), getComplexGoal2bPlanner(), getComplexGoal3aPlanner())
+        for (planner in planners) {
+            val plan = planner.findPlan()
+            assertEquals(plan.state, planner.executePlan(plan))
+        }
     }
 
 }
