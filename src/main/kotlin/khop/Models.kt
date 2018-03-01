@@ -9,7 +9,7 @@ interface Method<ExtendedState: State<ExtendedState>>: NetworkElement {
     fun decompose(state: ExtendedState): List<NetworkElement>
 }
 
-class SingleOpMethod<ExtendedState: State<ExtendedState>>(private val element: Operator<ExtendedState>): Method<ExtendedState> {
+data class SingleOpMethod<ExtendedState: State<ExtendedState>>(private val element: Operator<ExtendedState>): Method<ExtendedState> {
     override fun satisfiesPreconditions(state: ExtendedState): Boolean {
         return element.satisfiesPreconditions(state)
     }
@@ -47,7 +47,7 @@ data class PlanObj<ExtendedState: State<ExtendedState>>(override var failed: Boo
     }
 }
 
-class Domain<ExtendedState: State<ExtendedState>>(val initialState: ExtendedState, val initialNetwork: Deque<NetworkElement>)
+data class Domain<ExtendedState: State<ExtendedState>>(val initialState: ExtendedState, val initialNetwork: Deque<NetworkElement>)
 
 abstract class State<ExtendedState: State<ExtendedState>> {
     abstract fun deepCopy(): ExtendedState
