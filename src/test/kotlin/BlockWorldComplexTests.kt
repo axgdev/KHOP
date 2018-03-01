@@ -1,10 +1,7 @@
 import blocksworld.*
 import blocksworld.methods.*
 import blocksworld.operators.*
-import khop.Domain
-import khop.KHOP
-import khop.NetworkElement
-import khop.PlanObj
+import khop.*
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.*
@@ -36,10 +33,11 @@ class BlockWorldComplexTests {
         return listOf(alternativePlan1,alternativePlan2)
     }
 
-    private fun satisfiesOneOfTheSolutions(expected: List<Any>, actual: Any): Boolean {
+    private fun <ExtendedState: State<ExtendedState>> satisfiesOneOfTheSolutions(
+            expected: List<Plan<ExtendedState>>, actual: Plan<ExtendedState>): Boolean {
         var satisfiesAny = false
         for (alternativeSolution in expected)
-            satisfiesAny = satisfiesAny || (alternativeSolution == actual)
+            satisfiesAny = satisfiesAny || ((alternativeSolution.failed == actual.failed) && (alternativeSolution.actions == actual.actions))
         return satisfiesAny
     }
 

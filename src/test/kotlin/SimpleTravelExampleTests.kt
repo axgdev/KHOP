@@ -1,5 +1,4 @@
 import khop.*
-import org.junit.Assert.assertEquals
 import org.junit.Test
 import simpletravel.methods.Travel
 import simpletravel.model.*

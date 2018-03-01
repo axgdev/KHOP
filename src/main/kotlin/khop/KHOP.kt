@@ -55,6 +55,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
                 val newState = operator.applyEffects(state)
                 debugMessage("depth: $depth new state: $newState",2)
                 plan.actions.add(operator)
+                plan.state = newState
                 debugMessage("Added operator: $operator to nextPlan: $plan",2)
                 val nextPlan = tfd(newState, tasks, plan, depth + 1)
                 if (nextPlan.failed)
@@ -117,8 +118,8 @@ class KHOP<ExtendedState: State<ExtendedState>>
                                     tasks: Deque<NetworkElement>,
                                     plan: Plan<ExtendedState>,
                                     depth: Int,
-                                    methodChooser : MethodChooserFunction<ExtendedState>): MethodPlan<ExtendedState> {
-        return methodChooser(candidates.map { MethodPlan(it,
+                                    methodChooser : MethodChooserFunction<ExtendedState>): MethodStatePlan<ExtendedState> {
+        return methodChooser(candidates.map { MethodStatePlan(it,state,
                 tfd(state,LinkedList(listOf(it) + tasks),plan.createCopy(),depth + 1, methodChooser, "Trying out method: $it")) })
     }
 
@@ -145,13 +146,13 @@ class KHOP<ExtendedState: State<ExtendedState>>
         }
     }
 
-    fun firstPlanWithLeastSteps(methodsStatesPlans: List<MethodPlan<ExtendedState>>): MethodPlan<ExtendedState> {
+    fun firstPlanWithLeastSteps(methodsStatesPlans: List<MethodStatePlan<ExtendedState>>): MethodStatePlan<ExtendedState> {
         val filteredAndSorted = methodsStatesPlans.filter { !it.plan.failed }.sortedBy { it.plan.actions.size }
         if (filteredAndSorted.isEmpty())
             throw Exception("No applicable method found!")
-        val chosenMethodPlan = filteredAndSorted.first()
-        debugMessage("Chosen MethodPlan: $chosenMethodPlan",2)
-        return chosenMethodPlan
+        val chosenMethodStatePlan = filteredAndSorted.first()
+        debugMessage("Chosen MethodStatePlan: $chosenMethodStatePlan",2)
+        return chosenMethodStatePlan
     }
 
     private fun debugMessage(message: String, minVerboseLevel: Int) {
