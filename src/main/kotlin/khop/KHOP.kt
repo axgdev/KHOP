@@ -4,8 +4,12 @@ import java.util.*
 
 class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<ExtendedState>, private val verboseLevel: Int = 0) {
 
-    fun findPlan() =
-            tfd(domain.initialState, domain.initialNetwork, PlanObj())
+    fun findPlan(methodChooser: MethodChooserFunction<ExtendedState> = ::firstPlanWithLeastSteps): Plan<ExtendedState> {
+        debugMessage("initialState: ${domain.initialState}" + System.lineSeparator() + "initialNetwork: ${domain.initialNetwork}, methodChooser: $methodChooser", 0)
+        val plan = tfd(domain.initialState, domain.initialNetwork, PlanObj(), methodChooser = methodChooser)
+        debugMessage("returnedPlan: $plan", 0)
+        return plan
+    }
 
     fun executePlan(plan: Plan<ExtendedState>): ExtendedState {
         return executePlan(plan, domain.initialState)
@@ -19,12 +23,13 @@ class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<Exten
      * tasks: list of tasks
      * initialState: initial state
      */
-    private fun tfd(state: ExtendedState, tasks: Deque<NetworkElement>, plan: Plan<ExtendedState>, depth: Int = 0): Plan<ExtendedState> {
-        if (verboseLevel > 1)
-            println("depth: $depth tasks: $tasks")
+    private fun tfd(state: ExtendedState, tasks: Deque<NetworkElement>, plan: Plan<ExtendedState>, depth: Int = 0,
+                    methodChooser: MethodChooserFunction<ExtendedState> = ::firstPlanWithLeastSteps, additionalMessage: String = ""): Plan<ExtendedState> {
+        if (additionalMessage.isNotBlank())
+            debugMessage(additionalMessage, 2)
+        debugMessage("depth: $depth tasks: $tasks",1)
         if (tasks.isEmpty()) {
-            if (verboseLevel > 2)
-                println("depth $depth returns plan $plan")
+            debugMessage("depth $depth returns plan $plan",2)
             return plan //Empty plan
         }
         while(tasks.isNotEmpty()) {
@@ -40,60 +45,55 @@ class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<Exten
 //                }
 //                val operator = chooseOneTask(candidates)
                 val operator = task as Operator<ExtendedState>
-                if (verboseLevel > 2)
-                    println("depth $depth action $operator")
+                debugMessage("depth $depth action $operator", 2)
                 if (!operator.satisfiesPreconditions(state)) {
-                    if (verboseLevel > 2)
-                        println("depth: $depth does not satisfy preconditions")
-                    plan.failed = true
-                    return plan
+                    debugMessage("depth: $depth, operator: $operator does not satisfy preconditions", 2)
+                    return failedPlan(plan)
                 }
                 plan.failed = false
                 val newState = operator.applyEffects(state)
-                if (verboseLevel > 2)
-                    println("depth: $depth new state: $newState")
+                debugMessage("depth: $depth new state: $newState",2)
+                plan.actions.add(operator)
+                debugMessage("Added operator: $operator to nextPlan: $plan",2)
                 val nextPlan = tfd(newState, tasks, plan, depth + 1)
                 if (nextPlan.failed)
                     throw Exception("khop.Plan failed: " + nextPlan.toString())
-                nextPlan.actions.add(0, operator)
-                if (verboseLevel > 2)
-                    println("Added operator: $operator to nextPlan: $nextPlan and returning in depth: $depth")
+//                nextPlan.actions.add(0, operator)
+//                debugMessage("Added operator: $operator to nextPlan: $nextPlan and returning in depth: $depth",2)
                 return nextPlan
             }
             else {
-                var candidates: List<Method<ExtendedState>>
-                if (task is MethodGroup<*>) {
-                    candidates = findApplicableMethod(task as MethodGroup<ExtendedState>, state)
-                    if (candidates.isEmpty()) {
-                        plan.failed = true
-                        throw Exception("Cannot find suitable method for: " + task::class.java.simpleName)
-                    }
+                val chosenMethod: Method<ExtendedState>
+                when (task) {
+                    is Method<*> -> chosenMethod = task as Method<ExtendedState>
+                    is MethodGroup<*> ->
+                        try {
+                            val methodStatePlan = chooseOneMethodPlan((task as MethodGroup<ExtendedState>).methods,
+                                    state, tasks, plan, depth, methodChooser)
+                            return methodStatePlan.plan
+                        } catch (exception: Exception) {
+                            //plan.failed = true
+                            throw Exception("No applicable method found for: $task")
+                        }
+                    else -> throw Exception("Non supported task type: $task")
                 }
-                else {
-                    candidates = listOf(task as Method<ExtendedState>)
+                if (!chosenMethod.satisfiesPreconditions(state)) {
+                    debugMessage("depth: $depth, method: $chosenMethod does not satisfy preconditions",2)
+                    return failedPlan(plan)
                 }
-                for (method in candidates) {
-                    if (!method.satisfiesPreconditions(state))
-                        continue
-                    if (verboseLevel > 2)
-                        println("depth: $depth method instance: $method")
-                    val subTasks = method.decompose(state)
-                    if (verboseLevel > 2)
-                        println("depth: $depth new tasks: $subTasks")
-                    val decomposedTasks = method.decompose(state)
-                    if (verboseLevel > 2)
-                        println("depth: $depth decomposed tasks: $decomposedTasks")
-                    for (decomposedTask in decomposedTasks.reversed())
-                        tasks.push(decomposedTask)
-                    val nextPlan = tfd(state, tasks, plan, depth + 1)
-//                    if (nextPlan.failed)
-//                        throw Exception("khop.Plan failed: " + nextPlan.toString())
-                    if (!nextPlan.failed) {
-                        if (verboseLevel > 2)
-                            println("Added method to plan: $method to nextPlan: $nextPlan and returning in depth: $depth")
-                        return nextPlan
-                    }
+                debugMessage("depth: $depth method instance: $chosenMethod",2)
+                val subTasks = chosenMethod.decompose(state)
+                debugMessage("depth: $depth new tasks (decomposed): $subTasks",2)
+                for (decomposedTask in subTasks.reversed())
+                    tasks.push(decomposedTask)
+                val nextPlan = tfd(state, tasks, plan, depth + 1)
+                if (nextPlan.failed) {
+                    debugMessage("depth: $depth, plan fails when trying to apply method: $chosenMethod", 2)
+                    return nextPlan
                 }
+                    //throw Exception("khop.Plan failed: " + nextPlan.toString())
+                debugMessage("Added method to plan: $chosenMethod to nextPlan: $nextPlan and returning in depth: $depth",2)
+                return nextPlan
             }
         }
         if (verboseLevel > 2)
@@ -102,13 +102,24 @@ class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<Exten
         return plan
     }
 
+    private fun failedPlan(plan: Plan<ExtendedState>): Plan<ExtendedState> {
+        plan.failed = true
+        return plan
+    }
+
     private fun isPrimitive(task: NetworkElement): Boolean {
         return task is Operator<*>
     }
 
-//    private fun chooseOneMethod(candidates: List<Method<ExtendedState>>): Method<ExtendedState> {
-//        return candidates.first()
-//    }
+    private fun chooseOneMethodPlan(candidates: List<Method<ExtendedState>>,
+                                    state: ExtendedState,
+                                    tasks: Deque<NetworkElement>,
+                                    plan: Plan<ExtendedState>,
+                                    depth: Int,
+                                    methodChooser : MethodChooserFunction<ExtendedState>): MethodPlan<ExtendedState> {
+        return methodChooser(candidates.map { MethodPlan(it,
+                tfd(state,LinkedList(listOf(it) + tasks),plan.createCopy(),depth + 1, methodChooser, "Trying out method: $it")) })
+    }
 
 //    fun findApplicableOperator(task: khop.Operator, state: khop.State): List<khop.Operator> {
 //        //return domain.operators.filter { it.task.name == task.name && it.satisfiesPreconditions(state) }
@@ -135,6 +146,20 @@ class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<Exten
             }
             return finalState
         }
+    }
+
+    fun firstPlanWithLeastSteps(methodsStatesPlans: List<MethodPlan<ExtendedState>>): MethodPlan<ExtendedState> {
+        val filteredAndSorted = methodsStatesPlans.filter { !it.plan.failed }.sortedBy { it.plan.actions.size }
+        if (filteredAndSorted.isEmpty())
+            throw Exception("No applicable method found!")
+        val chosenMethodPlan = filteredAndSorted.first()
+        debugMessage("Chosen MethodPlan: $chosenMethodPlan",2)
+        return chosenMethodPlan
+    }
+
+    fun debugMessage(message: String, minVerboseLevel: Int) {
+        if (verboseLevel > minVerboseLevel)
+            println(message)
     }
 
 }

@@ -36,14 +36,25 @@ interface Operator<ExtendedState: State<ExtendedState>>: NetworkElement {
 interface Plan<ExtendedState: State<ExtendedState>> {
     var failed: Boolean
     val actions: MutableList<Operator<ExtendedState>>
+    fun createCopy(): Plan<ExtendedState>
 }
 
 data class PlanObj<ExtendedState: State<ExtendedState>>(override var failed: Boolean = false,
                                                              override val actions: MutableList<Operator<ExtendedState>> =
-                                                        mutableListOf()): Plan<ExtendedState>
+                                                        mutableListOf()): Plan<ExtendedState> {
+    override fun createCopy(): Plan<ExtendedState> {
+        return this.copy(actions = actions.toMutableList())
+    }
+}
 
 class Domain<ExtendedState: State<ExtendedState>>(val initialState: ExtendedState, val initialNetwork: Deque<NetworkElement>)
 
 abstract class State<ExtendedState: State<ExtendedState>> {
     abstract fun deepCopy(): ExtendedState
 }
+
+data class MethodPlan<ExtendedState: State<ExtendedState>>(val method: Method<ExtendedState>,
+                                                           val plan: Plan<ExtendedState>) {
+}
+
+typealias MethodChooserFunction<ExtendedState> = (methodsStatesPlans: List<MethodPlan<ExtendedState>>) -> MethodPlan<ExtendedState>
