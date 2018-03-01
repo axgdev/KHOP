@@ -70,7 +70,7 @@ class BlocksWorldSimpleTests {
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         println("Out of planner, plan: " + plan)
-        assertEquals(PlanObj<BlocksState>(false, mutableListOf()), plan)
+        assertEquals(PlanObj<BlocksState>(true, mutableListOf()), plan)
     }
 
     @Test
