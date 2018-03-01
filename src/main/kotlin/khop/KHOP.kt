@@ -125,10 +125,6 @@ class KHOP<ExtendedState: State<ExtendedState>>(private val domain: Domain<Exten
 //        //return domain.operators.filter { it.task.name == task.name && it.satisfiesPreconditions(state) }
 //    }
 
-    private fun findApplicableMethod(methodGroup: MethodGroup<ExtendedState>, state: ExtendedState): List<Method<ExtendedState>> {
-        return methodGroup.methods.filter { it.satisfiesPreconditions(state) }
-    }
-
 //    fun chooseOneTask(tasks: List<khop.Operator>): Action {
 //
 //    }
