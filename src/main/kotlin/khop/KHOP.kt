@@ -110,63 +110,58 @@ class KHOP<ExtendedState: State<ExtendedState>>
     fun iterativeExecuteTaskNetwork(initialState: ExtendedState, initialNetwork: Deque<NetworkElement>): PlanObj<ExtendedState> {
         val initialPlan = PlanObj<ExtendedState>(state = initialState)
 
-        data class MyStack(val currentPlan: PlanObj<ExtendedState>, val tasks: Deque<NetworkElement>)
-
-        val completeStack: Deque<MyStack> = LinkedList()
+        val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
         completeStack.push(MyStack(initialPlan, initialNetwork))
 
         var updatedPlan = initialPlan
         while (completeStack.isNotEmpty()) {
-            val poppedElement = completeStack.pop()
-            updatedPlan = poppedElement.currentPlan
-            while (poppedElement.tasks.isNotEmpty()) {
-                val poppedTask = poppedElement.tasks.pop()
-                val state = updatedPlan.state ?: throw Exception("State is null!")
-                if (isPrimitive(poppedTask)) {
-                    val operator = poppedTask as Operator<ExtendedState>
-                    val actions = updatedPlan.actions + operator
-                    val satisfiesPreconditions = operator.satisfiesPreconditions(state)
-                    if (!satisfiesPreconditions) {
-                        updatedPlan = PlanObj(true, listOf(), null)
-                        break
-                    }
-                    val newState = operator.applyEffects(state)
-                    updatedPlan = PlanObj(false, actions, newState)
-                }
-                else if (poppedTask is Method<*>) {
-                    val chosenMethod = poppedTask as Method<ExtendedState>
-                    if (!chosenMethod.satisfiesPreconditions(state)) {
-                        updatedPlan = PlanObj(true, listOf(), null)
-                        break
-                    }
-                    val decomposedTasks = chosenMethod.decompose(state)
-                    decomposedTasks.reversed().map { poppedElement.tasks.push(it) }
-                }
-                else {
-                    val methodGroup = poppedTask as MethodGroup<ExtendedState>
-                    //Only decide between methods that satisfy preconditions
-                    val filteredMethods = methodGroup.methods.filter { it.satisfiesPreconditions(state) }
-                    //Here is a choosing Point, we will deal with it later on, for now choose first
-                    if (filteredMethods.isEmpty()) {
-                        updatedPlan = PlanObj(true, listOf(), null)
-                        break
-                    }
-
-                    if (filteredMethods.size > 1) {
-                        filteredMethods.drop(1).reversed().forEach {
-                            val updatedStack : Deque<NetworkElement> = LinkedList(poppedElement.tasks)
-                            updatedStack.push(it)
-                            completeStack.push(MyStack(updatedPlan.createCopy(), updatedStack))
-                        }
-                    }
-                    poppedElement.tasks.push(filteredMethods.first())
-                    print("Trying out method: ${filteredMethods.first()}")
-                }
-            }
+            updatedPlan = getPlanFromNetwork(completeStack)
             if (!updatedPlan.failed)
                 return updatedPlan
         }
         return updatedPlan
+    }
+
+    private fun getPlanFromNetwork(completeStack: Deque<MyStack<ExtendedState>>): PlanObj<ExtendedState> {
+        val poppedElement = completeStack.pop() ?: throw Exception("Stack element null!")
+        var updatedPlan1 = poppedElement.currentPlan
+        while (poppedElement.tasks.isNotEmpty()) {
+            val poppedTask = poppedElement.tasks.pop()
+            val state = updatedPlan1.state ?: throw Exception("State is null!")
+            if (isPrimitive(poppedTask)) {
+                val operator = poppedTask as Operator<ExtendedState>
+                val actions = updatedPlan1.actions + operator
+                val satisfiesPreconditions = operator.satisfiesPreconditions(state)
+                if (!satisfiesPreconditions)
+                    return PlanObj(true, listOf(), null)
+                val newState = operator.applyEffects(state)
+                updatedPlan1 = PlanObj(false, actions, newState)
+            } else if (poppedTask is Method<*>) {
+                val chosenMethod = poppedTask as Method<ExtendedState>
+                if (!chosenMethod.satisfiesPreconditions(state))
+                    return PlanObj(true, listOf(), null)
+                val decomposedTasks = chosenMethod.decompose(state)
+                decomposedTasks.reversed().map { poppedElement.tasks.push(it) }
+            } else {
+                val methodGroup = poppedTask as MethodGroup<ExtendedState>
+                //Only decide between methods that satisfy preconditions
+                val filteredMethods = methodGroup.methods.filter { it.satisfiesPreconditions(state) }
+                //Here is a choosing Point, we will deal with it later on, for now choose first
+                if (filteredMethods.isEmpty())
+                    return PlanObj(true, listOf(), null)
+
+                if (filteredMethods.size > 1) {
+                    filteredMethods.drop(1).reversed().forEach {
+                        val updatedStack: Deque<NetworkElement> = LinkedList(poppedElement.tasks)
+                        updatedStack.push(it)
+                        completeStack.push(MyStack(updatedPlan1.createCopy(), updatedStack))
+                    }
+                }
+                poppedElement.tasks.push(filteredMethods.first())
+                print("Trying out method: ${filteredMethods.first()}")
+            }
+        }
+        return updatedPlan1
     }
 
     private fun iterativeGetAllPlansFromNetwork(initialState: ExtendedState,
@@ -174,9 +169,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
                                                 fromPlans: List<PlanObj<ExtendedState>>): List<PlanObj<ExtendedState>> {
         val initialPlan = PlanObj(state = initialState)
 
-        data class MyStack(val currentPlan: PlanObj<ExtendedState>, val tasks: Deque<NetworkElement>)
-
-        val completeStack: Deque<MyStack> = LinkedList()
+        val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
         if (fromPlans.isEmpty())
             completeStack.push(MyStack(initialPlan, initialNetwork))
         else
@@ -185,52 +178,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
         var updatedPlan: PlanObj<ExtendedState>
         var allPlans: List<PlanObj<ExtendedState>> = emptyList()
         while (completeStack.isNotEmpty()) {
-            val poppedElement = completeStack.pop()
-            updatedPlan = poppedElement.currentPlan
-            while (poppedElement.tasks.isNotEmpty()) {
-                val poppedTask = poppedElement.tasks.pop()
-                val state = updatedPlan.state ?: throw Exception("State is null!")
-                if (isPrimitive(poppedTask)) {
-                    val operator = poppedTask as Operator<ExtendedState>
-                    val actions = updatedPlan.actions + operator
-                    val satisfiesPreconditions = operator.satisfiesPreconditions(state)
-                    if (!satisfiesPreconditions) {
-                        updatedPlan = PlanObj(true, listOf(), null)
-                        break
-                    }
-                    val newState = operator.applyEffects(state)
-                    updatedPlan = PlanObj(false, actions, newState)
-                }
-                else if (poppedTask is Method<*>) {
-                    val chosenMethod = poppedTask as Method<ExtendedState>
-                    if (!chosenMethod.satisfiesPreconditions(state)) {
-                        updatedPlan = PlanObj(true, listOf(), null)
-                        break
-                    }
-                    val decomposedTasks = chosenMethod.decompose(state)
-                    decomposedTasks.reversed().map { poppedElement.tasks.push(it) }
-                }
-                else {
-                    val methodGroup = poppedTask as MethodGroup<ExtendedState>
-                    //Only decide between methods that satisfy preconditions
-                    val filteredMethods = methodGroup.methods.filter { it.satisfiesPreconditions(state) }
-                    //Here is a choosing Point, we will deal with it later on, for now choose first
-                    if (filteredMethods.isEmpty()) {
-                        updatedPlan = PlanObj(true, listOf(), null)
-                        break
-                    }
-
-                    if (filteredMethods.size > 1) {
-                        filteredMethods.drop(1).reversed().forEach {
-                            val updatedStack : Deque<NetworkElement> = LinkedList(poppedElement.tasks)
-                            updatedStack.push(it)
-                            completeStack.push(MyStack(updatedPlan.createCopy(), updatedStack))
-                        }
-                    }
-                    poppedElement.tasks.push(filteredMethods.first())
-                    print("Trying out method: ${filteredMethods.first()}")
-                }
-            }
+            updatedPlan = getPlanFromNetwork(completeStack)
             if (!updatedPlan.failed)
                 allPlans += updatedPlan
         }

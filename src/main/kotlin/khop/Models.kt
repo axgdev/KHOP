@@ -59,3 +59,5 @@ data class MethodStatePlan<ExtendedState: State<ExtendedState>>(val method: Meth
                                                                 val plan: PlanObj<ExtendedState>)
 
 typealias MethodChooserFunction<ExtendedState> = (methodsStatesPlans: List<MethodStatePlan<ExtendedState>>) -> MethodStatePlan<ExtendedState>
+
+data class MyStack<ExtendedState: State<ExtendedState>>(val currentPlan: PlanObj<ExtendedState>, val tasks: Deque<NetworkElement>)
