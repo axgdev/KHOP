@@ -33,7 +33,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
             debugMessage("depth $depth returns plan $plan",2)
             return plan //Empty plan
         }
-        while(tasks.isNotEmpty()) {
+        if (tasks.isNotEmpty()) {
             val task = tasks.pop()
             if (isPrimitive(task)) {
                     //The following code would be for the case that there are several operators per primitive task
