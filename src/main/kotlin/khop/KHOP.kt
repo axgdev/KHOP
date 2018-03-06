@@ -13,6 +13,10 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return plan
     }
 
+    @JvmOverloads fun getAllPlans(fromPlans: List<PlanObj<ExtendedState>> = emptyList()): List<PlanObj<ExtendedState>> {
+        return iterativeGetAllPlansFromNetwork(domain.initialState, domain.initialNetwork, fromPlans)
+    }
+
     fun executePlan(plan: PlanObj<ExtendedState>): ExtendedState {
         return executePlan(plan, domain.initialState)
     }
@@ -164,6 +168,75 @@ class KHOP<ExtendedState: State<ExtendedState>>
         }
         return updatedPlan
     }
+
+    private fun iterativeGetAllPlansFromNetwork(initialState: ExtendedState,
+                                                initialNetwork: Deque<NetworkElement>,
+                                                fromPlans: List<PlanObj<ExtendedState>>): List<PlanObj<ExtendedState>> {
+        val initialPlan = PlanObj(state = initialState)
+
+        data class MyStack(val currentPlan: PlanObj<ExtendedState>, val tasks: Deque<NetworkElement>)
+
+        val completeStack: Deque<MyStack> = LinkedList()
+        if (fromPlans.isEmpty())
+            completeStack.push(MyStack(initialPlan, initialNetwork))
+        else
+            fromPlans.reversed().forEach { completeStack.push(MyStack(it, initialNetwork)) }
+
+        var updatedPlan: PlanObj<ExtendedState>
+        var allPlans: List<PlanObj<ExtendedState>> = emptyList()
+        while (completeStack.isNotEmpty()) {
+            val poppedElement = completeStack.pop()
+            updatedPlan = poppedElement.currentPlan
+            while (poppedElement.tasks.isNotEmpty()) {
+                val poppedTask = poppedElement.tasks.pop()
+                val state = updatedPlan.state ?: throw Exception("State is null!")
+                if (isPrimitive(poppedTask)) {
+                    val operator = poppedTask as Operator<ExtendedState>
+                    val actions = updatedPlan.actions + operator
+                    val satisfiesPreconditions = operator.satisfiesPreconditions(state)
+                    if (!satisfiesPreconditions) {
+                        updatedPlan = PlanObj(true, listOf(), null)
+                        break
+                    }
+                    val newState = operator.applyEffects(state)
+                    updatedPlan = PlanObj(false, actions, newState)
+                }
+                else if (poppedTask is Method<*>) {
+                    val chosenMethod = poppedTask as Method<ExtendedState>
+                    if (!chosenMethod.satisfiesPreconditions(state)) {
+                        updatedPlan = PlanObj(true, listOf(), null)
+                        break
+                    }
+                    val decomposedTasks = chosenMethod.decompose(state)
+                    decomposedTasks.reversed().map { poppedElement.tasks.push(it) }
+                }
+                else {
+                    val methodGroup = poppedTask as MethodGroup<ExtendedState>
+                    //Only decide between methods that satisfy preconditions
+                    val filteredMethods = methodGroup.methods.filter { it.satisfiesPreconditions(state) }
+                    //Here is a choosing Point, we will deal with it later on, for now choose first
+                    if (filteredMethods.isEmpty()) {
+                        updatedPlan = PlanObj(true, listOf(), null)
+                        break
+                    }
+
+                    if (filteredMethods.size > 1) {
+                        filteredMethods.drop(1).reversed().forEach {
+                            val updatedStack : Deque<NetworkElement> = LinkedList(poppedElement.tasks)
+                            updatedStack.push(it)
+                            completeStack.push(MyStack(updatedPlan.createCopy(), updatedStack))
+                        }
+                    }
+                    poppedElement.tasks.push(filteredMethods.first())
+                    print("Trying out method: ${filteredMethods.first()}")
+                }
+            }
+            if (!updatedPlan.failed)
+                allPlans += updatedPlan
+        }
+        return allPlans
+    }
+
 
     private fun getFailedPlan(plan: PlanObj<ExtendedState>): PlanObj<ExtendedState> {
         return PlanObj(true, plan.actions.toMutableList(), plan.state)
