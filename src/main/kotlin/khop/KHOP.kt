@@ -117,7 +117,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
             updatedPlan = poppedElement.currentPlan
             while (poppedElement.tasks.isNotEmpty()) {
                 val poppedTask = poppedElement.tasks.pop()
-                val state = updatedPlan.state!!
+                val state = updatedPlan.state ?: throw Exception("State is null!")
                 if (isPrimitive(poppedTask)) {
                     val operator = poppedTask as Operator<ExtendedState>
                     val actions = updatedPlan.actions + operator
