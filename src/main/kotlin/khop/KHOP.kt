@@ -7,7 +7,8 @@ class KHOP<ExtendedState: State<ExtendedState>>
 
     @JvmOverloads fun findPlan(methodChooser: MethodChooserFunction<ExtendedState> = ::firstPlanWithLeastSteps): PlanObj<ExtendedState> {
         debugMessage(System.lineSeparator() + "initialState: ${domain.initialState}" + System.lineSeparator() + "initialNetwork: ${domain.initialNetwork}, methodChooser: $methodChooser", 0)
-        val plan = tfd(domain.initialState, domain.initialNetwork, PlanObj(), methodChooser = methodChooser)
+        //val plan = tfd(domain.initialState, domain.initialNetwork, PlanObj(), methodChooser = methodChooser)
+        val plan = iterativeExecuteTaskNetwork(domain.initialState, domain.initialNetwork)
         debugMessage("returnedPlan: $plan", 0)
         return plan
     }

@@ -29,7 +29,7 @@ class BlocksWorldBacktrackTest {
         assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
     }
 
-    @Test(expected = Exception::class)
+    @Test//(expected = Exception::class)
     fun shouldFail() {
         val initialState = getInitialNetworkProblemsSimpleTest()
         val initialNetwork = LinkedList<NetworkElement>(listOf(GetMG("b")))
