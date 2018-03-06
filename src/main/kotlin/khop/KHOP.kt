@@ -116,8 +116,13 @@ class KHOP<ExtendedState: State<ExtendedState>>
                                     plan: PlanObj<ExtendedState>,
                                     depth: Int,
                                     methodChooser : MethodChooserFunction<ExtendedState>): MethodStatePlan<ExtendedState> {
-        return methodChooser(candidates.map { MethodStatePlan(it,state,
-                tfd(state,LinkedList(listOf(it) + tasks),plan.createCopy(),depth + 1, methodChooser, "Trying out method: $it")) })
+        val applicableMethodsStatesPlans = candidates.map { MethodStatePlan(it,state,
+                tfd(state,LinkedList(listOf(it) + tasks), plan.createCopy(),depth + 1,
+                        methodChooser, "Trying out method: $it")) }.filter { !it.plan.failed }
+        if (applicableMethodsStatesPlans.isEmpty())
+            throw Exception("No applicable method found!")
+
+        return methodChooser(applicableMethodsStatesPlans)
     }
 
 //    fun findApplicableOperator(task: khop.Operator, state: khop.State): List<khop.Operator> {
@@ -144,10 +149,8 @@ class KHOP<ExtendedState: State<ExtendedState>>
     }
 
     fun firstPlanWithLeastSteps(methodsStatesPlans: List<MethodStatePlan<ExtendedState>>): MethodStatePlan<ExtendedState> {
-        val filteredAndSorted = methodsStatesPlans.filter { !it.plan.failed }.sortedBy { it.plan.actions.size }
-        if (filteredAndSorted.isEmpty())
-            throw Exception("No applicable method found!")
-        val chosenMethodStatePlan = filteredAndSorted.first()
+        val sorted = methodsStatesPlans.sortedBy { it.plan.actions.size }
+        val chosenMethodStatePlan = sorted.first()
         debugMessage("Chosen MethodStatePlan: $chosenMethodStatePlan",2)
         return chosenMethodStatePlan
     }
