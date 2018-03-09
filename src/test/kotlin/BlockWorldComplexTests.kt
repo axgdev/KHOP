@@ -45,7 +45,7 @@ class BlockWorldComplexTests {
     fun getComplexGoal2aPlanner(): KHOP<BlocksState> {
         val initialState = getInitialNetwork2()
         val goal = getComplex2aGoal()
-        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
+        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(MoveBlocks(goal)))
         return KHOP(Domain(initialState, initialNetwork), 1)
     }
 
@@ -66,7 +66,7 @@ class BlockWorldComplexTests {
     fun getComplexGoal2bPlanner(): KHOP<BlocksState> {
         val initialState = getInitialNetwork2()
         val goal = getComplex2bGoal()
-        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
+        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(MoveBlocks(goal)))
         return KHOP(Domain(initialState, initialNetwork), 1)
     }
 
@@ -155,7 +155,7 @@ class BlockWorldComplexTests {
     fun getComplexGoal3aPlanner(): KHOP<BlocksState> {
         val initialState = getInitialNetwork3()
         val goal = getComplex3aGoal()
-        val initialNetwork = LinkedList<NetworkElement>(listOf(MoveBlocks(goal)))
+        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(MoveBlocks(goal)))
         return KHOP(Domain(initialState, initialNetwork), 1)
     }
 

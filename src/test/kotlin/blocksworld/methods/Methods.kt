@@ -10,7 +10,7 @@ data class MoveBlocks(private val goal: BlocksState): Method<BlocksState> {
         return true
     }
 
-    override fun decompose(state: BlocksState): List<NetworkElement> {
+    override fun decompose(state: BlocksState): List<NetworkElement<BlocksState>> {
         for (block in allBlocks(state)) {
             val status = status(block, state, goal)
             if (status == Status.MOVE_TO_TABLE)
@@ -33,7 +33,7 @@ data class MoveOne(private val block1: String, private val dest: String): Method
         return true
     }
 
-    override fun decompose(state: BlocksState): List<NetworkElement> {
+    override fun decompose(state: BlocksState): List<NetworkElement<BlocksState>> {
         return listOf(GetM(block1), Put(block1, dest))
     }
 
@@ -45,7 +45,7 @@ data class GetM(private val block1: String): Method<BlocksState> {
         return state.clear[block1] == true
     }
 
-    override fun decompose(state: BlocksState): List<NetworkElement> {
+    override fun decompose(state: BlocksState): List<NetworkElement<BlocksState>> {
         return if (state.pos[block1] == table)
             listOf(Pickup(block1))
         else
@@ -58,7 +58,7 @@ data class Put(private val block1: String, private val block2: String): Method<B
         return state.holding == block1
     }
 
-    override fun decompose(state: BlocksState): List<NetworkElement> {
+    override fun decompose(state: BlocksState): List<NetworkElement<BlocksState>> {
         return if (block2 == table)
             listOf(PutDown(block1))
         else

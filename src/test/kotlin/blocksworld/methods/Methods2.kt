@@ -11,7 +11,7 @@ data class GetByUnstack(private val block: String): Method<BlocksState> {
         return state.clear[block]!!
     }
 
-    override fun decompose(state: BlocksState): List<NetworkElement> {
+    override fun decompose(state: BlocksState): List<NetworkElement<BlocksState>> {
         return listOf(UnstackM(block))
     }
 }
@@ -21,7 +21,7 @@ data class GetByPickup(private val block: String): Method<BlocksState> {
         return state.clear[block]!!
     }
 
-    override fun decompose(state: BlocksState): List<NetworkElement> {
+    override fun decompose(state: BlocksState): List<NetworkElement<BlocksState>> {
         return listOf(PickupM(block))
     }
 }
@@ -31,7 +31,7 @@ data class PickupM(private val block: String): Method<BlocksState> {
         return state.clear[block]!!
     }
 
-    override fun decompose(state: BlocksState): List<NetworkElement> {
+    override fun decompose(state: BlocksState): List<NetworkElement<BlocksState>> {
         return listOf(Pickup(block))
     }
 }
@@ -41,7 +41,7 @@ data class UnstackM(private val block: String): Method<BlocksState> {
         return state.clear[block]!!
     }
 
-    override fun decompose(state: BlocksState): List<NetworkElement> {
+    override fun decompose(state: BlocksState): List<NetworkElement<BlocksState>> {
         checkDictionaryEntries(state, block)
         return listOf(Unstack(block, state.pos[block]!!))
     }

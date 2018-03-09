@@ -17,7 +17,7 @@ class SimpleTravelExampleTests {
     fun getTravelByFootTestPlanner(): KHOP<SimpleTravelState> {
         val axel = Person(london, 0.0, 0.0)
         val initialState = SimpleTravelState(axel, taxiDriver, locations)
-        val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, manchester)))
+        val initialNetwork = LinkedList<NetworkElement<SimpleTravelState>>(listOf(Travel(london, manchester)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         return planner
     }
@@ -33,7 +33,7 @@ class SimpleTravelExampleTests {
     fun getTravelByTaxiTestPlanner(): KHOP<SimpleTravelState> {
         val axel = Person(london, 534.0 * 1000, 0.0)
         val initialState = SimpleTravelState(axel, taxiDriver, locations)
-        val initialNetwork = LinkedList<NetworkElement>(listOf(Travel(london, edinburgh)))
+        val initialNetwork = LinkedList<NetworkElement<SimpleTravelState>>(listOf(Travel(london, edinburgh)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         return planner
     }

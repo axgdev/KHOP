@@ -29,7 +29,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
      * tasks: list of tasks
      * initialState: initial state
      */
-    private fun tfd(state: ExtendedState, tasks: Deque<NetworkElement>, plan: PlanObj<ExtendedState>, depth: Int = 0,
+    private fun tfd(state: ExtendedState, tasks: Deque<NetworkElement<ExtendedState>>, plan: PlanObj<ExtendedState>, depth: Int = 0,
                     methodChooser: MethodChooserFunction<ExtendedState> = ::firstPlanWithLeastSteps, additionalMessage: String = ""): PlanObj<ExtendedState> {
         if (additionalMessage.isNotBlank())
             debugMessage(additionalMessage, 2)
@@ -107,7 +107,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return plan
     }
 
-    fun iterativeExecuteTaskNetwork(initialState: ExtendedState, initialNetwork: Deque<NetworkElement>): PlanObj<ExtendedState> {
+    fun iterativeExecuteTaskNetwork(initialState: ExtendedState, initialNetwork: Deque<NetworkElement<ExtendedState>>): PlanObj<ExtendedState> {
         val initialPlan = PlanObj<ExtendedState>(state = initialState)
 
         val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
@@ -152,7 +152,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
 
                 if (filteredMethods.size > 1) {
                     filteredMethods.drop(1).reversed().forEach {
-                        val updatedStack: Deque<NetworkElement> = LinkedList(poppedElement.tasks)
+                        val updatedStack = LinkedList(poppedElement.tasks)
                         updatedStack.push(it)
                         completeStack.push(MyStack(updatedPlan1.createCopy(), updatedStack))
                     }
@@ -165,7 +165,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
     }
 
     private fun iterativeGetAllPlansFromNetwork(initialState: ExtendedState,
-                                                initialNetwork: Deque<NetworkElement>,
+                                                initialNetwork: Deque<NetworkElement<ExtendedState>>,
                                                 fromPlans: List<PlanObj<ExtendedState>>): List<PlanObj<ExtendedState>> {
         val initialPlan = PlanObj(state = initialState)
 
@@ -190,13 +190,13 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return PlanObj(true, plan.actions.toMutableList(), plan.state)
     }
 
-    private fun isPrimitive(task: NetworkElement): Boolean {
-        return task is Operator<*>
+    private fun isPrimitive(task: NetworkElement<ExtendedState>): Boolean {
+        return task is Operator<ExtendedState>
     }
 
     private fun chooseOneMethodPlan(candidates: List<Method<ExtendedState>>,
                                     state: ExtendedState,
-                                    tasks: Deque<NetworkElement>,
+                                    tasks: Deque<NetworkElement<ExtendedState>>,
                                     plan: PlanObj<ExtendedState>,
                                     depth: Int,
                                     methodChooser : MethodChooserFunction<ExtendedState>): MethodStatePlan<ExtendedState> {

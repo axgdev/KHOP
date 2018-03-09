@@ -13,7 +13,7 @@ data class TravelByFoot(private val fromLocation: Location, private val toLocati
         return fromLocation.distanceTo(toLocation) <= 300
     }
 
-    override fun decompose(state: SimpleTravelState): List<NetworkElement> {
+    override fun decompose(state: SimpleTravelState): List<NetworkElement<SimpleTravelState>> {
         return listOf(Walk(fromLocation, toLocation))
     }
 }
@@ -23,7 +23,7 @@ data class TravelByTaxi(private val fromLocation: Location, private val toLocati
         return state.person.cash >= DomainFunctions.taxiRate(fromLocation, toLocation)
     }
 
-    override fun decompose(state: SimpleTravelState): List<NetworkElement> {
+    override fun decompose(state: SimpleTravelState): List<NetworkElement<SimpleTravelState>> {
         return listOf(CallTaxi(fromLocation), RideTaxi(fromLocation, toLocation), PayDriver())
     }
 }
