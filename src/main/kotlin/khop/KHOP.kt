@@ -130,12 +130,10 @@ class KHOP<ExtendedState: State<ExtendedState>>
             val state = updatedPlan1.state ?: throw Exception("State is null!")
             when (poppedTask) {
                 is Operator<ExtendedState> -> {
-                    val actions = updatedPlan1.actions + poppedTask
-                    val satisfiesPreconditions = poppedTask.satisfiesPreconditions(state)
-                    if (!satisfiesPreconditions)
+                    if (!poppedTask.satisfiesPreconditions(state))
                         return getFailedEmptyPlan()
                     val newState = poppedTask.applyEffects(state)
-                    updatedPlan1 = PlanObj(false, actions, newState)
+                    updatedPlan1 = PlanObj(false, updatedPlan1.actions + poppedTask, newState)
                 }
                 is Method<ExtendedState> -> {
                     if (!poppedTask.satisfiesPreconditions(state))
