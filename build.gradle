@@ -29,3 +29,10 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+jar {
+    //Include source files of library into source folder
+    into 'src', { from sourceSets.main.allSource }
+    //Include all the dependencies
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
