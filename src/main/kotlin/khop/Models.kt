@@ -33,6 +33,10 @@ interface Operator<ExtendedState: State<ExtendedState>>: NetworkElement<Extended
     fun applyEffects(state: ExtendedState): ExtendedState
 }
 
+interface OperatorGroup<ExtendedState: State<ExtendedState>>: NetworkElement<ExtendedState> {
+    val operators: List<Operator<ExtendedState>>
+}
+
 interface Plan<ExtendedState: State<ExtendedState>> {
     val failed: Boolean
     val actions: List<Operator<ExtendedState>>
