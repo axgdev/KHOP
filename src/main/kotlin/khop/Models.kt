@@ -58,10 +58,4 @@ abstract class State<ExtendedState: State<ExtendedState>> {
     abstract fun deepCopy(): ExtendedState
 }
 
-data class MethodStatePlan<ExtendedState: State<ExtendedState>>(val method: Method<ExtendedState>,
-                                                                val state: ExtendedState,
-                                                                val plan: PlanObj<ExtendedState>)
-
-typealias MethodChooserFunction<ExtendedState> = (methodsStatesPlans: List<MethodStatePlan<ExtendedState>>) -> MethodStatePlan<ExtendedState>
-
 data class MyStack<ExtendedState: State<ExtendedState>>(val currentPlan: PlanObj<ExtendedState>, val tasks: Deque<NetworkElement<ExtendedState>>)
