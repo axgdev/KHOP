@@ -3,16 +3,22 @@ buildscript {
 
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.6.2"
     }
 }
 
-group 'KHOP'
+group 'axelg'
 version '0.50.0'
 
 apply plugin: 'kotlin'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'maven-publish'
 
 repositories {
     mavenCentral()
@@ -30,9 +36,53 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-jar {
-    //Include source files of library into source folder
-    into 'src', { from sourceSets.main.allSource }
-    //Include all the dependencies
+task allJar(type: Jar) {
+    //Include source files of library into sources folder
+    into 'sources', { from sourceSets.main.allSource }
+    //Include all dependencies
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    classifier = 'all'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task withSources(type: Jar) {
+    //Include source files of library into sources folder
+    into 'sources', { from sourceSets.main.allSource }
+    //Include all compiled files without dependencies
+    from sourceSets.main.output
+    classifier = 'withsources'
+}
+
+artifacts {
+    archives sourcesJar
+    archives allJar
+    archives withSources
+}
+
+artifactory {
+    contextUrl = artifactory_local_url
+    publish {
+        repository {
+            repoKey = artifactory_repo_key
+            username = artifactory_username
+            password = artifactory_password
+        }
+        defaults {
+            publications('mavenJava')
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact withSources
+        }
+    }
 }
