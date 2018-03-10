@@ -126,7 +126,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
         val poppedElement = completeStack.pop() ?: throw Exception("Stack element null!")
         var updatedPlan1 = poppedElement.currentPlan
         while (poppedElement.tasks.isNotEmpty()) {
-            val poppedTask = poppedElement.tasks.pop()
+            val poppedTask = poppedElement.tasks.pop() ?: throw Exception("poppedElement was null")
             val state = updatedPlan1.state ?: throw Exception("State is null!")
             when (poppedTask) {
                 is Operator<ExtendedState> -> {
@@ -143,24 +143,8 @@ class KHOP<ExtendedState: State<ExtendedState>>
                 }
                 is OperatorGroup<ExtendedState>, is MethodGroup<ExtendedState> -> {
                     //Only decide between methods or operators that satisfy preconditions
-                    var filteredElements = listOf<NetworkElement<ExtendedState>>()
-                    when (poppedTask) {
-                        is OperatorGroup<ExtendedState> -> filteredElements = poppedTask.operators.filter { it.satisfiesPreconditions(state) }
-                        is MethodGroup<ExtendedState> -> filteredElements = poppedTask.methods.filter { it.satisfiesPreconditions(state) }
-                    }
-                    //Here is a choosing Point, we will deal with it later on, for now choose first
-                    if (filteredElements.isEmpty())
+                    if (!processOfElementsSucceeds(poppedTask, state, poppedElement, completeStack, updatedPlan1))
                         return getFailedEmptyPlan()
-
-                    if (filteredElements.size > 1) {
-                        filteredElements.drop(1).reversed().forEach {
-                            val updatedStack = LinkedList(poppedElement.tasks)
-                            updatedStack.push(it)
-                            completeStack.push(MyStack(updatedPlan1.createCopy(), updatedStack))
-                        }
-                    }
-                    poppedElement.tasks.push(filteredElements.first())
-                    debugMessage("Trying out alternative element: ${filteredElements.first()}", 1)
                 }
                 else -> {
                     throw Exception("Unknown type of Network element")
@@ -168,6 +152,30 @@ class KHOP<ExtendedState: State<ExtendedState>>
             }
         }
         return updatedPlan1
+    }
+
+    private fun processOfElementsSucceeds(poppedTask: NetworkElement<ExtendedState>, state: ExtendedState,
+                                          poppedElement: MyStack<ExtendedState>, completeStack: Deque<MyStack<ExtendedState>>,
+                                          updatedPlan1: PlanObj<ExtendedState>): Boolean {
+        var filteredElements = listOf<NetworkElement<ExtendedState>>()
+        when (poppedTask) {
+            is OperatorGroup<ExtendedState> -> filteredElements = poppedTask.operators.filter { it.satisfiesPreconditions(state) }
+            is MethodGroup<ExtendedState> -> filteredElements = poppedTask.methods.filter { it.satisfiesPreconditions(state) }
+        }
+        //Here is a choosing Point, we will deal with it later on, for now choose first
+        if (filteredElements.isEmpty())
+            return false
+
+        if (filteredElements.size > 1) {
+            filteredElements.drop(1).reversed().forEach {
+                val updatedStack = LinkedList(poppedElement.tasks)
+                updatedStack.push(it)
+                completeStack.push(MyStack(updatedPlan1.createCopy(), updatedStack))
+            }
+        }
+        poppedElement.tasks.push(filteredElements.first())
+        debugMessage("Trying out alternative element: ${filteredElements.first()}", 1)
+        return true
     }
 
     private fun iterativeGetAllPlansFromNetwork(initialState: ExtendedState,
