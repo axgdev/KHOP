@@ -134,12 +134,14 @@ class KHOP<ExtendedState: State<ExtendedState>>
                         return getFailedEmptyPlan()
                     val newState = poppedTask.applyEffects(state)
                     currentPlan = PlanObj(false, currentPlan.actions + poppedTask, newState)
+                    debugMessage("Added operator: $poppedTask to plan: $currentPlan",2)
                 }
                 is Method<ExtendedState> -> {
                     if (!poppedTask.satisfiesPreconditions(state))
                         return getFailedEmptyPlan()
                     val decomposedTasks = poppedTask.decompose(state)
                     decomposedTasks.reversed().forEach { poppedElement.tasks.push(it) }
+                    debugMessage("Decomposing method: $poppedTask",2)
                 }
                 is OperatorGroup<ExtendedState>, is MethodGroup<ExtendedState> -> {
                     //Only decide between methods or operators that satisfy preconditions
@@ -157,14 +159,18 @@ class KHOP<ExtendedState: State<ExtendedState>>
     private fun processOfElementsSucceeds(poppedTask: NetworkElement<ExtendedState>, state: ExtendedState,
                                           poppedElement: MyStack<ExtendedState>, completeStack: Deque<MyStack<ExtendedState>>,
                                           currentPlan: PlanObj<ExtendedState>): Boolean {
+        debugMessage("Finding out alternatives for: $poppedTask",2)
         var filteredElements = listOf<NetworkElement<ExtendedState>>()
         when (poppedTask) {
             is OperatorGroup<ExtendedState> -> filteredElements = poppedTask.operators.filter { it.satisfiesPreconditions(state) }
             is MethodGroup<ExtendedState> -> filteredElements = poppedTask.methods.filter { it.satisfiesPreconditions(state) }
         }
         //Here is a choosing Point, we will deal with it later on, for now choose first
-        if (filteredElements.isEmpty())
+        if (filteredElements.isEmpty()) {
+            debugMessage("Alternative was not found for: $poppedTask",2)
             return false
+        }
+        debugMessage("Found out applicable alternatives: $filteredElements",2)
 
         if (filteredElements.size > 1) {
             filteredElements.drop(1).reversed().forEach {
