@@ -20,7 +20,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return executePlan(plan, domain.initialState)
     }
 
-    fun iterativeExecuteTaskNetwork(initialState: ExtendedState, initialNetwork: Deque<NetworkElement<ExtendedState>>): PlanObj<ExtendedState> {
+    private fun iterativeExecuteTaskNetwork(initialState: ExtendedState, initialNetwork: Deque<NetworkElement<ExtendedState>>): PlanObj<ExtendedState> {
         val initialPlan = PlanObj<ExtendedState>(state = initialState)
 
         val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
