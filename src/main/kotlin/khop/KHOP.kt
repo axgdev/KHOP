@@ -35,6 +35,27 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return updatedPlan
     }
 
+    private fun iterativeGetAllPlansFromNetwork(initialState: ExtendedState,
+                                                initialNetwork: Deque<NetworkElement<ExtendedState>>,
+                                                fromPlans: List<PlanObj<ExtendedState>>): List<PlanObj<ExtendedState>> {
+        val initialPlan = PlanObj(state = initialState)
+
+        val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
+        if (fromPlans.isEmpty())
+            completeStack.push(MyStack(initialPlan, initialNetwork))
+        else
+            fromPlans.reversed().forEach { completeStack.push(MyStack(it, initialNetwork)) }
+
+        var updatedPlan: PlanObj<ExtendedState>
+        var allPlans: List<PlanObj<ExtendedState>> = emptyList()
+        while (completeStack.isNotEmpty()) {
+            updatedPlan = getPlanFromNetwork(completeStack)
+            if (!updatedPlan.failed)
+                allPlans += updatedPlan
+        }
+        return allPlans
+    }
+
     private fun getPlanFromNetwork(completeStack: Deque<MyStack<ExtendedState>>): PlanObj<ExtendedState> {
         val poppedElement = completeStack.pop() ?: throw Exception("Stack element null!")
         var currentPlan = poppedElement.currentPlan
@@ -97,28 +118,12 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return true
     }
 
-    private fun iterativeGetAllPlansFromNetwork(initialState: ExtendedState,
-                                                initialNetwork: Deque<NetworkElement<ExtendedState>>,
-                                                fromPlans: List<PlanObj<ExtendedState>>): List<PlanObj<ExtendedState>> {
-        val initialPlan = PlanObj(state = initialState)
-
-        val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
-        if (fromPlans.isEmpty())
-            completeStack.push(MyStack(initialPlan, initialNetwork))
-        else
-            fromPlans.reversed().forEach { completeStack.push(MyStack(it, initialNetwork)) }
-
-        var updatedPlan: PlanObj<ExtendedState>
-        var allPlans: List<PlanObj<ExtendedState>> = emptyList()
-        while (completeStack.isNotEmpty()) {
-            updatedPlan = getPlanFromNetwork(completeStack)
-            if (!updatedPlan.failed)
-                allPlans += updatedPlan
-        }
-        return allPlans
-    }
-
     private fun getFailedEmptyPlan() = PlanObj<ExtendedState>(true)
+
+    private fun debugMessage(message: String, minVerboseLevel: Int) {
+        if (verboseLevel > minVerboseLevel)
+            println(message)
+    }
 
     companion object {
         fun <ExtendedState: State<ExtendedState>> executePlan(plan: Plan<ExtendedState>,
@@ -134,12 +139,5 @@ class KHOP<ExtendedState: State<ExtendedState>>
             return finalState
         }
     }
-
-    private fun debugMessage(message: String, minVerboseLevel: Int) {
-        if (verboseLevel > minVerboseLevel)
-            println(message)
-    }
-
 }
-
 
