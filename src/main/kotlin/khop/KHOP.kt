@@ -124,16 +124,16 @@ class KHOP<ExtendedState: State<ExtendedState>>
 
     private fun getPlanFromNetwork(completeStack: Deque<MyStack<ExtendedState>>): PlanObj<ExtendedState> {
         val poppedElement = completeStack.pop() ?: throw Exception("Stack element null!")
-        var updatedPlan1 = poppedElement.currentPlan
+        var currentPlan = poppedElement.currentPlan
         while (poppedElement.tasks.isNotEmpty()) {
             val poppedTask = poppedElement.tasks.pop() ?: throw Exception("poppedElement was null")
-            val state = updatedPlan1.state ?: throw Exception("State is null!")
+            val state = currentPlan.state ?: throw Exception("State is null!")
             when (poppedTask) {
                 is Operator<ExtendedState> -> {
                     if (!poppedTask.satisfiesPreconditions(state))
                         return getFailedEmptyPlan()
                     val newState = poppedTask.applyEffects(state)
-                    updatedPlan1 = PlanObj(false, updatedPlan1.actions + poppedTask, newState)
+                    currentPlan = PlanObj(false, currentPlan.actions + poppedTask, newState)
                 }
                 is Method<ExtendedState> -> {
                     if (!poppedTask.satisfiesPreconditions(state))
@@ -143,7 +143,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
                 }
                 is OperatorGroup<ExtendedState>, is MethodGroup<ExtendedState> -> {
                     //Only decide between methods or operators that satisfy preconditions
-                    if (!processOfElementsSucceeds(poppedTask, state, poppedElement, completeStack, updatedPlan1))
+                    if (!processOfElementsSucceeds(poppedTask, state, poppedElement, completeStack, currentPlan))
                         return getFailedEmptyPlan()
                 }
                 else -> {
@@ -151,12 +151,12 @@ class KHOP<ExtendedState: State<ExtendedState>>
                 }
             }
         }
-        return updatedPlan1
+        return currentPlan
     }
 
     private fun processOfElementsSucceeds(poppedTask: NetworkElement<ExtendedState>, state: ExtendedState,
                                           poppedElement: MyStack<ExtendedState>, completeStack: Deque<MyStack<ExtendedState>>,
-                                          updatedPlan1: PlanObj<ExtendedState>): Boolean {
+                                          currentPlan: PlanObj<ExtendedState>): Boolean {
         var filteredElements = listOf<NetworkElement<ExtendedState>>()
         when (poppedTask) {
             is OperatorGroup<ExtendedState> -> filteredElements = poppedTask.operators.filter { it.satisfiesPreconditions(state) }
@@ -170,7 +170,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
             filteredElements.drop(1).reversed().forEach {
                 val updatedStack = LinkedList(poppedElement.tasks)
                 updatedStack.push(it)
-                completeStack.push(MyStack(updatedPlan1.createCopy(), updatedStack))
+                completeStack.push(MyStack(currentPlan.createCopy(), updatedStack))
             }
         }
         poppedElement.tasks.push(filteredElements.first())
