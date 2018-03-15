@@ -1,6 +1,7 @@
 import khop.*
 import org.junit.Test
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import simpletravel.methods.Travel
 import simpletravel.model.*
 import simpletravel.operators.*
@@ -45,6 +46,25 @@ class SimpleTravelExampleTests {
                 CallTaxi(london),
                 RideTaxi(london, edinburgh),
                 PayDriver())), plan)
+    }
+
+    @Test
+    fun shouldReturnTwoPlans() {
+        val axel = Person(london, 534.0 * 10000, 0.0)
+        val initialState = SimpleTravelState(axel, taxiDriver, locations)
+        val initialNetwork = LinkedList<NetworkElement<SimpleTravelState>>(listOf(Travel(london, manchester)))
+        val planner = KHOP(Domain(initialState, initialNetwork), 1)
+        val plans = planner.getAllPlans()
+        val expectedPlan1 = PlanObj(actions = mutableListOf(Walk(london, manchester)))
+        val expectedPlan2 = PlanObj(actions = mutableListOf(
+                CallTaxi(london),
+                RideTaxi(london, manchester),
+                PayDriver()))
+        var passesTest = true
+        for (plan in plans)
+            passesTest = plan.customEquals(expectedPlan1) || plan.customEquals(expectedPlan2)
+        assertTrue(passesTest)
+        assertEquals(2, plans.size)
     }
 
     @Test
