@@ -23,7 +23,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
     private fun iterativeExecuteTaskNetwork(initialState: ExtendedState, initialNetwork: Deque<NetworkElement<ExtendedState>>): PlanObj<ExtendedState> {
         val initialPlan = PlanObj<ExtendedState>(state = initialState)
 
-        val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
+        val completeStack: Deque<MyStack<ExtendedState>> = ArrayDeque()
         completeStack.push(MyStack(initialPlan, initialNetwork))
 
         var updatedPlan = initialPlan
@@ -40,7 +40,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
                                                 fromPlans: List<PlanObj<ExtendedState>>): List<PlanObj<ExtendedState>> {
         val initialPlan = PlanObj(state = initialState)
 
-        val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
+        val completeStack: Deque<MyStack<ExtendedState>> = ArrayDeque()
         if (fromPlans.isEmpty())
             completeStack.push(MyStack(initialPlan, ArrayDeque(initialNetwork)))
         else
@@ -108,7 +108,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
 
         if (filteredElements.size > 1) {
             filteredElements.drop(1).reversed().forEach {
-                val updatedStack = LinkedList(poppedElement.tasks)
+                val updatedStack = ArrayDeque(poppedElement.tasks)
                 updatedStack.push(it)
                 completeStack.push(MyStack(currentPlan.createCopy(), updatedStack))
             }
