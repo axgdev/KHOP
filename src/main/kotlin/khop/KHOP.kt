@@ -42,7 +42,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
 
         val completeStack: Deque<MyStack<ExtendedState>> = LinkedList()
         if (fromPlans.isEmpty())
-            completeStack.push(MyStack(initialPlan, initialNetwork))
+            completeStack.push(MyStack(initialPlan, ArrayDeque(initialNetwork)))
         else
             fromPlans.reversed().forEach { completeStack.push(MyStack(it, ArrayDeque(initialNetwork))) }
 
