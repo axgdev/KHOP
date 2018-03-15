@@ -14,7 +14,7 @@ class BlocksWorldBacktrackTest {
     @Test
     fun shouldBacktrackOnce() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(GetMG("a")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(GetMG("a")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Unstack("a", "b"))), plan)
@@ -23,7 +23,7 @@ class BlocksWorldBacktrackTest {
     @Test
     fun shouldNotBacktrack() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(GetMG("c")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(GetMG("c")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
@@ -32,7 +32,7 @@ class BlocksWorldBacktrackTest {
     @Test//(expected = Exception::class)
     fun shouldFail() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(GetMG("b")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(GetMG("b")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         planner.findPlan()
     }

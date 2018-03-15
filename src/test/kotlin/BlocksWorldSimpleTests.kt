@@ -15,7 +15,7 @@ class BlocksWorldSimpleTests {
     @Test
     fun failBlockWorldProblem1() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(Pickup("a")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(Pickup("a")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(true), plan)
@@ -24,7 +24,7 @@ class BlocksWorldSimpleTests {
     @Test
     fun failBlockWorldProblem2() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(Pickup("b")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(Pickup("b")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(true), plan)
@@ -33,7 +33,7 @@ class BlocksWorldSimpleTests {
     @Test
     fun succeedBlockWorldProblem1() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(Pickup("c")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(Pickup("c")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
@@ -42,7 +42,7 @@ class BlocksWorldSimpleTests {
     @Test
     fun succeedBlockWorldProblem2() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(Unstack("a", "b")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(Unstack("a", "b")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Unstack("a", "b"))), plan)
@@ -51,7 +51,7 @@ class BlocksWorldSimpleTests {
     @Test
     fun succeedBlockWorldProblem3() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(GetM("a")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(GetM("a")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Unstack("a", "b"))), plan)
@@ -60,7 +60,7 @@ class BlocksWorldSimpleTests {
     @Test
     fun failBlockWorldProblem3() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(GetM("b")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(GetM("b")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(true, mutableListOf()), plan)
@@ -69,7 +69,7 @@ class BlocksWorldSimpleTests {
     @Test
     fun succeedBlockWorldProblem4() {
         val initialState = getInitialNetworkProblemsSimpleTest()
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(GetM("c")))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(GetM("c")))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(PlanObj<BlocksState>(false, mutableListOf(Pickup("c"))), plan)
@@ -90,7 +90,7 @@ class BlocksWorldSimpleTests {
         val initialState = getInitialNetworkProblemsSimpleTest()
         val goal = BlocksState(pos = mapOf(Pair("c", "b"), Pair("b", "a"), Pair("a", table)),
                 clear = mapOf(Pair("c", true), Pair("b", false), Pair("a", false)), holding = falseHolding)
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(MoveBlocks(goal)))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(MoveBlocks(goal)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(getComplexGoal_1_Solution(), plan)
@@ -101,7 +101,7 @@ class BlocksWorldSimpleTests {
     fun complexGoal_1b() {
         val initialState = getInitialNetworkProblemsSimpleTest()
         val goal = BlocksState(pos = mapOf(Pair("c", "b"), Pair("b", "a")))
-        val initialNetwork = LinkedList<NetworkElement<BlocksState>>(listOf(MoveBlocks(goal)))
+        val initialNetwork = ArrayDeque<NetworkElement<BlocksState>>(listOf(MoveBlocks(goal)))
         val planner = KHOP(Domain(initialState, initialNetwork), 1)
         val plan = planner.findPlan()
         assertPlanActionStatusEquals(getComplexGoal_1_Solution(), plan)
