@@ -44,7 +44,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
         if (fromPlans.isEmpty())
             completeStack.push(MyStack(initialPlan, initialNetwork))
         else
-            fromPlans.reversed().forEach { completeStack.push(MyStack(it, initialNetwork)) }
+            fromPlans.reversed().forEach { completeStack.push(MyStack(it, ArrayDeque(initialNetwork))) }
 
         var updatedPlan: PlanObj<ExtendedState>
         var allPlans: List<PlanObj<ExtendedState>> = emptyList()
