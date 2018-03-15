@@ -1,5 +1,9 @@
 # Change Log for KHOP
 
+### v0.51.1-alpha.1
+
+* Fix passing reference of initial network to the iteration stack instead of a copy
+
 ### v0.51.1-alpha
 
 * Fix `PlanObj` not creating a copy of the state
