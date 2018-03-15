@@ -48,7 +48,7 @@ data class PlanObj<ExtendedState: State<ExtendedState>>(override val failed: Boo
                                                         override val actions: List<Operator<ExtendedState>> = listOf(),
                                                         override val state: ExtendedState? = null): Plan<ExtendedState> {
     override fun createCopy(): PlanObj<ExtendedState> {
-        return this.copy(actions = actions.toList())
+        return this.copy(actions = actions.toList(), state = state?.deepCopy())
     }
 }
 
