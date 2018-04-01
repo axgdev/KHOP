@@ -1,10 +1,14 @@
 # Change Log for KHOP
 
+### v0.51.1
+
+* Previous versions were tested and no other bug was found.
+* Update Kotlin from 1.2.30 to 1.2.31
+
 ### v0.51.1-alpha.2
 
 * Pass copy of initial network instead of reference also when the initial plans are empty.
 * Replace the use of LinkedList to ArrayDeque for better performance.
-
 
 ### v0.51.1-alpha.1
 
