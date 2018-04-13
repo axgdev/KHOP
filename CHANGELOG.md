@@ -1,5 +1,9 @@
 # Change Log for KHOP
 
+### v0.52.1
+
+* Add debug message when a task fails
+
 ### v0.52.0
 
 * Add `PrimitiveTask` and `ComplexTask` classes
