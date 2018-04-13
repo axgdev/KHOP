@@ -65,14 +65,14 @@ class KHOP<ExtendedState: State<ExtendedState>>
             when (poppedTask) {
                 is Operator<ExtendedState> -> {
                     if (!poppedTask.satisfiesPreconditions(state))
-                        return getFailedEmptyPlan()
+                        return getFailedEmptyPlan(poppedTask)
                     val newState = poppedTask.applyEffects(state)
                     currentPlan = PlanObj(false, currentPlan.actions + poppedTask, newState)
                     debugMessage("Added operator: $poppedTask to plan: $currentPlan",2)
                 }
                 is Method<ExtendedState> -> {
                     if (!poppedTask.satisfiesPreconditions(state))
-                        return getFailedEmptyPlan()
+                        return getFailedEmptyPlan(poppedTask)
                     val decomposedTasks = poppedTask.decompose(state)
                     decomposedTasks.reversed().forEach { poppedElement.tasks.push(it) }
                     debugMessage("Decomposing method: $poppedTask",2)
@@ -80,7 +80,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
                 is OperatorGroup<ExtendedState>, is MethodGroup<ExtendedState> -> {
                     //Only decide between methods or operators that satisfy preconditions
                     if (!processOfElementsSucceeds(poppedTask, state, poppedElement, completeStack, currentPlan))
-                        return getFailedEmptyPlan()
+                        return getFailedEmptyPlan(poppedTask)
                 }
                 else -> {
                     throw Exception("Unknown type of Network element")
@@ -118,7 +118,10 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return true
     }
 
-    private fun getFailedEmptyPlan() = PlanObj<ExtendedState>(true)
+    private fun getFailedEmptyPlan(poppedTask: NetworkElement<ExtendedState>): PlanObj<ExtendedState> {
+        debugMessage("Task failed: $poppedTask", 5)
+        return PlanObj<ExtendedState>(true)
+    }
 
     private fun debugMessage(message: String, minVerboseLevel: Int) {
         if (verboseLevel > minVerboseLevel)
