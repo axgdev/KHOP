@@ -1,5 +1,9 @@
 # Change Log for KHOP
 
+### v0.53.1-alpha
+
+* Add option to return the failed plan
+
 ### v0.52.1
 
 * Add debug message when a task fails
