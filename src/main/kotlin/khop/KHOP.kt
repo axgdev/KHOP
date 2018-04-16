@@ -5,6 +5,8 @@ import java.util.*
 class KHOP<ExtendedState: State<ExtendedState>>
     @JvmOverloads constructor(private val domain: Domain<ExtendedState>, private val verboseLevel: Int = 0) {
 
+    private var returnFailedState = false
+
     fun findPlan(): PlanObj<ExtendedState> {
         debugMessage(System.lineSeparator() + "initialState: ${domain.initialState}" + System.lineSeparator() + "initialNetwork: ${domain.initialNetwork}", 0)
         val plan = iterativeExecuteTaskNetwork(domain.initialState, domain.initialNetwork)
@@ -12,7 +14,8 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return plan
     }
 
-    @JvmOverloads fun getAllPlans(fromPlans: List<PlanObj<ExtendedState>> = emptyList()): List<PlanObj<ExtendedState>> {
+    @JvmOverloads fun getAllPlans(fromPlans: List<PlanObj<ExtendedState>> = emptyList(), returnFailedState: Boolean = false): List<PlanObj<ExtendedState>> {
+        this.returnFailedState = returnFailedState
         return iterativeGetAllPlansFromNetwork(domain.initialState, domain.initialNetwork, fromPlans)
     }
 
@@ -65,14 +68,14 @@ class KHOP<ExtendedState: State<ExtendedState>>
             when (poppedTask) {
                 is Operator<ExtendedState> -> {
                     if (!poppedTask.satisfiesPreconditions(state))
-                        return getFailedEmptyPlan(poppedTask)
+                        return getFailedEmptyPlan(poppedTask, currentPlan)
                     val newState = poppedTask.applyEffects(state)
                     currentPlan = PlanObj(false, currentPlan.actions + poppedTask, newState)
                     debugMessage("Added operator: $poppedTask to plan: $currentPlan",2)
                 }
                 is Method<ExtendedState> -> {
                     if (!poppedTask.satisfiesPreconditions(state))
-                        return getFailedEmptyPlan(poppedTask)
+                        return getFailedEmptyPlan(poppedTask, currentPlan)
                     val decomposedTasks = poppedTask.decompose(state)
                     decomposedTasks.reversed().forEach { poppedElement.tasks.push(it) }
                     debugMessage("Decomposing method: $poppedTask",2)
@@ -80,7 +83,7 @@ class KHOP<ExtendedState: State<ExtendedState>>
                 is OperatorGroup<ExtendedState>, is MethodGroup<ExtendedState> -> {
                     //Only decide between methods or operators that satisfy preconditions
                     if (!processOfElementsSucceeds(poppedTask, state, poppedElement, completeStack, currentPlan))
-                        return getFailedEmptyPlan(poppedTask)
+                        return getFailedEmptyPlan(poppedTask, currentPlan)
                 }
                 else -> {
                     throw Exception("Unknown type of Network element")
@@ -118,9 +121,12 @@ class KHOP<ExtendedState: State<ExtendedState>>
         return true
     }
 
-    private fun getFailedEmptyPlan(poppedTask: NetworkElement<ExtendedState>): PlanObj<ExtendedState> {
+    private fun getFailedEmptyPlan(poppedTask: NetworkElement<ExtendedState>, currentPlan: PlanObj<ExtendedState>): PlanObj<ExtendedState> {
         debugMessage("Task failed: $poppedTask", 5)
-        return PlanObj<ExtendedState>(true)
+        return if (returnFailedState)
+            PlanObj(true, currentPlan.actions, currentPlan.state)
+        else
+            PlanObj(true)
     }
 
     private fun debugMessage(message: String, minVerboseLevel: Int) {
