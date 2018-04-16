@@ -1,5 +1,10 @@
 # Change Log for KHOP
 
+### v0.53.1-alpha.1
+
+* Remove option to return the failed plan
+* Make `PlanObj` normal class. Data class consumes significant resources to transform into string
+
 ### v0.53.1-alpha
 
 * Add option to return the failed plan
