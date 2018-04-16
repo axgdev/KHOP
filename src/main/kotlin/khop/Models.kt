@@ -28,7 +28,7 @@ interface MethodGroup<ExtendedState: State<ExtendedState>>: NetworkElement<Exten
     val methods: List<Method<ExtendedState>>
 }
 
-data class ComplexTask<ExtendedState: State<ExtendedState>>(
+class ComplexTask<ExtendedState: State<ExtendedState>>(
         val name: String, override val methods: List<Method<ExtendedState>>): MethodGroup<ExtendedState>
 
 interface Operator<ExtendedState: State<ExtendedState>>: NetworkElement<ExtendedState> {
@@ -40,7 +40,7 @@ interface OperatorGroup<ExtendedState: State<ExtendedState>>: NetworkElement<Ext
     val operators: List<Operator<ExtendedState>>
 }
 
-data class PrimitiveTask<ExtendedState: State<ExtendedState>>(
+class PrimitiveTask<ExtendedState: State<ExtendedState>>(
         val name: String, override val operators: List<Operator<ExtendedState>>): OperatorGroup<ExtendedState>
 
 interface Plan<ExtendedState: State<ExtendedState>> {
