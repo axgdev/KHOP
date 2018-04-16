@@ -50,11 +50,11 @@ interface Plan<ExtendedState: State<ExtendedState>> {
     fun createCopy(): Plan<ExtendedState>
 }
 
-data class PlanObj<ExtendedState: State<ExtendedState>>(override val failed: Boolean = false,
+class PlanObj<ExtendedState: State<ExtendedState>>(override val failed: Boolean = false,
                                                         override val actions: List<Operator<ExtendedState>> = listOf(),
                                                         override val state: ExtendedState? = null): Plan<ExtendedState> {
     override fun createCopy(): PlanObj<ExtendedState> {
-        return this.copy(actions = actions.toList(), state = state?.deepCopy())
+        return PlanObj(failed, actions.toList(), state?.deepCopy())
     }
 }
 
