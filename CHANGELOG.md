@@ -1,5 +1,9 @@
 # Change Log for KHOP
 
+### v0.53.1-alpha.2
+
+* `ComplexTask` and `Primitive` class no longer data classes. As stated before data classes consume significant resources
+
 ### v0.53.1-alpha.1
 
 * Remove option to return the failed plan
