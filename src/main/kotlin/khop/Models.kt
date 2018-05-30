@@ -28,7 +28,7 @@ interface MethodGroup<ExtendedState: State<ExtendedState>>: NetworkElement<Exten
     val methods: List<Method<ExtendedState>>
 }
 
-class ComplexTask<ExtendedState: State<ExtendedState>>(
+class CompoundTask<ExtendedState: State<ExtendedState>>(
         val name: String, override val methods: List<Method<ExtendedState>>): MethodGroup<ExtendedState>
 
 interface Operator<ExtendedState: State<ExtendedState>>: NetworkElement<ExtendedState> {
