@@ -1,8 +1,14 @@
 # Change Log for KHOP
 
+### v0.53.1
+
+* Version has been tested and stable
+* Rename class `ComplexTask` to `CompoundTask`
+* Correct changelog text `v0.53.1-alpha.2` class name `PrimitiveTask`
+
 ### v0.53.1-alpha.2
 
-* `ComplexTask` and `Primitive` class no longer data classes. As stated before data classes consume significant resources
+* `ComplexTask` and `PrimitiveTask` class no longer data classes. As stated before data classes consume significant resources
 
 ### v0.53.1-alpha.1
 
